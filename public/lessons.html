@@ -31,7 +31,7 @@
           >Inicio</a
         >
         <a
-          href="ready.html"
+          href="languages.html"
           class="comfortaa text-green-400 font-bold transition duration-200 hover:text-blue-400 hover:scale-110"
           >Aprender</a
         >
@@ -53,7 +53,7 @@
     >
       <div class="flex items-center space-x-4">
         <a
-          href="languages.html"
+          onclick="goBack()"
           class="text-gray-600 hover:text-gray-900 transition duration-300"
         >
           <svg
@@ -72,7 +72,7 @@
           </svg>
         </a>
         <h1 class="text-3xl font-bold text-gray-800" id="language-name">
-          Cargando...
+          No se pudo encontrar el idioma...
         </h1>
       </div>
       <img src="" alt="" class="w-10 md:w-12 h-auto rounded-md shadow-md" id="language-flag"/>
@@ -169,6 +169,14 @@
         },
       ];
 
+
+
+      function goBack() {
+        localStorage.removeItem("lang");
+        localStorage.removeItem("code");
+        window.location.href = 'languages.html';
+      }
+
       const leccionesContainer = document.getElementById("lecciones-container");
 
       const imagenesTipos = {
@@ -179,8 +187,8 @@
 
       // Extract the language name from the URL
       const urlParams = new URLSearchParams(window.location.search);
-      const languageName = urlParams.get("lang");
-      const languageCode = urlParams.get("code");
+      const languageName = localStorage.getItem("lang");
+      const languageCode = localStorage.getItem("code");
 
       // Update the header text and flag
       const languageNameElement = document.getElementById("language-name");
@@ -227,17 +235,20 @@
         switch (leccion.tipo) {
           case "Memoria":
             card.onclick = () => {
-              window.location.href = `memory.html?lesson_id=${leccion._id}`;
+              localStorage.setItem('lesson_id', leccion._id);
+              window.location.href = `memory.html`;
             };
             break;
           case "Asociar":
             card.onclick = () => {
-              window.location.href = `match.html?lesson_id=${leccion._id}`;
+              localStorage.setItem('lesson_id', leccion._id);
+              window.location.href = `match.html`;
             };
             break;
           case "Rellenar":
             card.onclick = () => {
-              window.location.href = `fill.html?lesson_id=${leccion._id}`;
+              localStorage.setItem('lesson_id', leccion._id);
+              window.location.href = `fill.html`;
             };
             break;
           default:
