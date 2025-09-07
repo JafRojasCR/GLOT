@@ -18,11 +18,7 @@
   <body class="bg-gray-50 text-gray-800 comfortaa min-h-screen">
     <nav class="flex items-center justify-between px-6 py-4 border-b w-full">
       <div class="flex items-center space-x-2">
-        <img
-          src="./img/GLOT Logo.png"
-          alt="G/LOT Logo"
-          class="h-10 w-auto"
-        />
+        <img src="./img/GLOT Logo.png" alt="G/LOT Logo" class="h-10 w-auto" />
       </div>
       <div class="flex space-x-8 text-lg">
         <a
@@ -36,7 +32,7 @@
           >Aprender</a
         >
         <a
-          href="#"
+          href="profile.html"
           class="comfortaa text-black transition duration-200 hover:text-green-400 hover:scale-110"
           >Mi Aprendizaje</a
         >
@@ -75,7 +71,12 @@
           No se pudo encontrar el idioma...
         </h1>
       </div>
-      <img src="" alt="" class="w-10 md:w-12 h-auto rounded-md shadow-md" id="language-flag"/>
+      <img
+        src=""
+        alt=""
+        class="w-10 md:w-12 h-auto rounded-md shadow-md"
+        id="language-flag"
+      />
     </header>
 
     <main class="container mx-auto p-8">
@@ -106,15 +107,55 @@
     </main>
 
     <script>
+      // Verificar token antes de mostrar la página
+      async function verifyTokenOrRedirect() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "login.html";
+          return;
+        }
+        try {
+          const res = await fetch("/api/verify-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token })
+          });
+          const result = await res.json();
+          if (!result.valid) {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+          }
+        } catch (err) {
+          window.location.href = "login.html";
+        }
+      }
+      verifyTokenOrRedirect();
+      // Salir button logic
+      document.addEventListener("DOMContentLoaded", function () {
+        const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
+        if (!localStorage.getItem("token")) {
+          salirBtn.style.display = "none";
+        } else {
+          salirBtn.style.display = "inline-block";
+          salirBtn.onclick = function (e) {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            localStorage.removeItem("datosToken");
+            localStorage.removeItem("usuario");
+            window.location.href = "login.html";
+          };
+        }
+      });
+
       const lecciones = [
         {
           _id: "767bh2bye72e",
           idioma: "Portugués",
           palabras: ["hola", "adios", "ojo", "azul", "niño"],
           traducciones: ["oi", "tchau", "olho", "azui", "menino"],
-          author: "JaJas",
+          autor: "JaJas",
           creada_el: 17128371273,
-          players: ["JaJas", "RoRo", "user1"],
+          jugadores: ["JaJas", "RoRo", "user1"],
           tipo: "Memoria",
         },
         {
@@ -122,9 +163,9 @@
           idioma: "Portugués",
           palabras: ["casa", "perro", "gato"],
           traducciones: ["casa", "cachorro", "gato"],
-          author: "RoRo",
+          autor: "RoRo",
           creada_el: 17128371274,
-          players: ["RoRo", "user2"],
+          jugadores: ["RoRo", "user2"],
           tipo: "Asociar",
         },
         {
@@ -132,9 +173,9 @@
           idioma: "Español",
           palabras: ["yo", "soy", "un", "niño"],
           traducciones: ["eu", "sou", "um", "menino"],
-          author: "JaJa",
+          autor: "JaJa",
           creada_el: 17128371275,
-          players: ["JaJa", "user3", "user4", "user5"],
+          jugadores: ["JaJa", "user3", "user4", "user5"],
           tipo: "Rellenar",
         },
         {
@@ -142,9 +183,9 @@
           idioma: "Español",
           palabras: ["mesa", "silla", "cama"],
           traducciones: ["mesa", "cadeira", "cama"],
-          author: "Pepe",
+          autor: "Pepe",
           creada_el: 17128371276,
-          players: ["Pepe", "user6"],
+          jugadores: ["Pepe", "user6"],
           tipo: "Memoria",
         },
         {
@@ -152,9 +193,9 @@
           idioma: "Inglés",
           palabras: ["sol", "luna", "estrella"],
           traducciones: ["sol", "lua", "estrela"],
-          author: "Luis",
+          autor: "Luis",
           creada_el: 17128371277,
-          players: ["Luis", "user7", "user8"],
+          jugadores: ["Luis", "user7", "user8"],
           tipo: "Asociar",
         },
         {
@@ -162,19 +203,18 @@
           idioma: "Inglés",
           palabras: ["comer", "beber", "dormir"],
           traducciones: ["comer", "beber", "dormir"],
-          author: "Ana",
+          autor: "Ana",
           creada_el: 17128371278,
-          players: ["Ana", "user9"],
+          jugadores: ["Ana", "user9"],
           tipo: "Rellenar",
         },
       ];
 
-
-
       function goBack() {
         localStorage.removeItem("lang");
         localStorage.removeItem("code");
-        window.location.href = 'languages.html';
+        localStorage.removeItem("lesson_id");
+        window.location.href = "languages.html";
       }
 
       const leccionesContainer = document.getElementById("lecciones-container");
@@ -198,7 +238,7 @@
         languageNameElement.textContent = languageName;
         // You'll need a mapping from language name to country code
         // For this example, let's use a simple object
-      
+
         const countryCode = languageCode ? languageCode.toLowerCase() : null;
         if (countryCode) {
           languageFlagElement.src = `https://flagcdn.com/w160/${countryCode}.png`;
@@ -213,7 +253,7 @@
 
       // Generate cards for the filtered lessons
       filteredLecciones.forEach((leccion) => {
-        const playerCount = leccion.players.length;
+        const playerCount = leccion.jugadores.length;
         const card = document.createElement("div");
         card.classList.add(
           "bg-white",
@@ -231,23 +271,23 @@
           "duration-300",
           "cursor-pointer"
         );
-        
+
         switch (leccion.tipo) {
           case "Memoria":
             card.onclick = () => {
-              localStorage.setItem('lesson_id', leccion._id);
+              localStorage.setItem("lesson_id", leccion._id);
               window.location.href = `memory.html`;
             };
             break;
           case "Asociar":
             card.onclick = () => {
-              localStorage.setItem('lesson_id', leccion._id);
+              localStorage.setItem("lesson_id", leccion._id);
               window.location.href = `match.html`;
             };
             break;
           case "Rellenar":
             card.onclick = () => {
-              localStorage.setItem('lesson_id', leccion._id);
+              localStorage.setItem("lesson_id", leccion._id);
               window.location.href = `fill.html`;
             };
             break;
@@ -268,7 +308,7 @@
 
         const autor = document.createElement("p");
         autor.classList.add("text-sm", "text-gray-500", "mb-1");
-        autor.textContent = `Autor: ${leccion.author}`;
+        autor.textContent = `Autor: ${leccion.autor}`;
 
         const jugadores = document.createElement("p");
         jugadores.classList.add("text-sm", "text-gray-500");

@@ -1,11 +1,156 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>G/LOT - Iniciar Sesión</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .comfortaa {
+        font-family: "Comfortaa", cursive;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 text-gray-800 comfortaa min-h-screen flex items-center justify-center"
+  >
+    <div
+      class="bg-white p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-lg text-center mx-4"
+    >
+      <h1 class="text-4xl font-bold mb-6 text-green-400">Iniciar Sesión</h1>
+      <div class="space-y-6">
+        <div>
+          <input
+            type="email"
+            id="email"
+            placeholder="Correo electrónico"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            id="clave"
+            placeholder="Contraseña"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+          />
+        </div>
+        <button
+          onclick="login()"
+          class="w-full bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition duration-300"
+        >
+          Acceder
+        </button>
+      </div>
+      <div class="mt-6 text-sm">
+        <p>
+          ¿No tienes una cuenta?
+          <a
+            href="register.html"
+            class="text-blue-400 hover:text-blue-500 transition duration-200"
+            >Regístrate aquí</a
+          >
+        </p>
+        <p>
+          <a
+            href="index.html"
+            class="text-gray-500 hover:text-gray-700 transition duration-200 mt-2 block"
+            >Volver al inicio</a
+          >
+        </p>
+      </div>
+    </div>
+    <script>
+      async function login() {
+        const datos = {
+          email: document.getElementById("email").value,
+          clave: document.getElementById("clave").value,
+        };
+        try {
+          const respuesta = await fetch("/api/usuarios/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos),
+          });
+
+          const resultado = await respuesta.json();
+
+          if (!respuesta.ok) {
+            document.getElementById("mensaje").innerText =
+              resultado.error || "Credenciales inválidas";
+            return;
+          }
+
+          // Guardar el token en localStorage
+          localStorage.setItem("token", resultado.token);
+          // Decodificar datosToken desde el token
+          function parseJwt(token) {
+            const base64Url = token.split(".")[1];
+            const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+            const jsonPayload = decodeURIComponent(
+              atob(base64)
+                .split("")
+                .map(
+                  (c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+                )
+                .join("")
+            );
+            return JSON.parse(jsonPayload);
+          }
+          const datosToken = parseJwt(resultado.token);
+          localStorage.setItem("token", resultado.token);
+          localStorage.setItem("datosToken", JSON.stringify(datosToken));
+          localStorage.setItem("usuario", datosToken.username);
+
+          // Redireccionar o continuar lógica
+          // window.location.href = 'dashboard.html'; // si aplica
+          const token = localStorage.getItem("token");
+          if (!token) {
+            window.location.href = "login.html";
+          } else {
+            // Optionally, call backend to verify token
+            fetch("/api/verify-token", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ token }),
+            })
+              .then((res) => res.json())
+              .then((result) => {
+                if (result.valid) {
+                  window.location.href = "languages.html";
+                } else {
+                  window.location.href = "login.html";
+                }
+              });
+          }
+        } catch (error) {
+          console.error("Error al iniciar sesión:", error);
+          document.getElementById("mensaje").innerText =
+            "Ocurrió un error en el servidor.";
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
+        if (!localStorage.getItem("token")) {
+          salirBtn.style.display = "none";
+        } else {
+          salirBtn.style.display = "inline-block";
+          salirBtn.onclick = function (e) {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            localStorage.removeItem("datosToken");
+            localStorage.removeItem("usuario");
+            window.location.href = "login.html";
+          };
+        }
+      });
+    </script>
+  </body>
 </html>

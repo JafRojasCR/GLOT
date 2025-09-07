@@ -18,11 +18,7 @@
   <body class="bg-gray-50 text-gray-800 comfortaa min-h-screen">
     <nav class="flex items-center justify-between px-6 py-4 border-b w-full">
       <div class="flex items-center space-x-2">
-        <img
-          src="./img/GLOT Logo.png"
-          alt="G/LOT Logo"
-          class="h-10 w-auto"
-        />
+        <img src="./img/GLOT Logo.png" alt="G/LOT Logo" class="h-10 w-auto" />
       </div>
       <div class="flex space-x-8 text-lg">
         <a
@@ -36,11 +32,11 @@
           >Aprender</a
         >
         <a
-          href="#"
+          href="profile.html"
           class="comfortaa text-black transition duration-200 hover:text-green-400 hover:scale-110"
           >Mi Aprendizaje</a
         >
-         <a
+        <a
           href="#"
           class="comfortaa text-black transition duration-200 hover:text-red-400 hover:scale-110"
           >Salir</a
@@ -83,9 +79,7 @@
         class="flex flex-col md:flex-row justify-center items-center md:space-x-8 space-y-8 md:space-y-0"
       >
         <div class="flex flex-col items-center text-center p-6 w-full md:w-1/3">
-          <div
-            class="bg-blue-400 text-white rounded-full p-4 mb-4 shadow-xl"
-          >
+          <div class="bg-blue-400 text-white rounded-full p-4 mb-4 shadow-xl">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-12 w-12"
@@ -115,9 +109,7 @@
         </div>
 
         <div class="flex flex-col items-center text-center p-6 w-full md:w-1/3">
-          <div
-            class="bg-yellow-400 text-white rounded-full p-4 mb-4 shadow-xl"
-          >
+          <div class="bg-yellow-400 text-white rounded-full p-4 mb-4 shadow-xl">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-12 w-12"
@@ -141,21 +133,30 @@
         </div>
 
         <div class="flex flex-col items-center text-center p-6 w-full md:w-1/3">
-          <div
-            class="bg-pink-400 text-white rounded-full p-4 mb-4 shadow-xl"
-          >
+          <div class="bg-pink-400 text-white rounded-full p-4 mb-4 shadow-xl">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-12 w-12"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
-              <path
+              <!-- Cabeza centrada -->
+              <circle
+                cx="12"
+                cy="8"
+                r="4"
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M17 20v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M12 4a4 4 0 110 8 4 4 0 010-8z"
+              />
+              <!-- Hombros / cuerpo: arco suave -->
+              <path
+                d="M4 20a8 8 0 0116 0"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
               />
             </svg>
           </div>
@@ -182,12 +183,31 @@
       >
     </section>
 
-    <footer
-      class="bg-gray-800 text-gray-300 text-center py-6 px-4 comfortaa"
-    >
-      <p>
-        &copy; 2025 G/LOT. Todos los derechos reservados.
-      </p>
+    <footer class="bg-gray-800 text-gray-300 text-center py-6 px-4 comfortaa">
+      <p>&copy; 2025 G/LOT. Todos los derechos reservados.</p>
     </footer>
+
+    <script>
+      // Mostrar/ocultar botón Salir según sesión
+      document.addEventListener("DOMContentLoaded", function () {
+        const token = localStorage.getItem("token");
+        const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
+        if (!token) {
+          salirBtn.style.display = "none";
+        } else {
+          salirBtn.style.display = "inline-block";
+          salirBtn.onclick = function (e) {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            localStorage.removeItem("datosToken");
+            localStorage.removeItem("usuario");
+            // Remove any other session-related items
+            // No way to remove JWT from server, just from localStorage
+            window.location.href = "login.html";
+          };
+        }
+      });
+
+    </script>
   </body>
 </html>

@@ -5,9 +5,9 @@ const leccionSchema = new Schema({
   idioma: { type: String, required: true },
   palabras: { type: [String], default: [], required: true },
   traducciones: { type: [String], default: [], required: true },
-  author: { type: String, required: true },
+  autor: { type: String, required: true },
   creada_el: { type: Date, default: Date.now },
-  players: { type: [String], default: [] },
+  jugadores: { type: [String], default: [] },
   tipo: { type: String, required: true },
 });
 

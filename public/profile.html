@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- Existing content of the HTML file -->
+
+    <script>
+      // Verificar token antes de mostrar la página
+      async function verifyTokenOrRedirect() {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "login.html";
+          return;
+        }
+        try {
+          const res = await fetch("/api/verify-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token })
+          });
+          const result = await res.json();
+          if (!result.valid) {
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+          }
+        } catch (err) {
+          window.location.href = "login.html";
+        }
+      }
+      verifyTokenOrRedirect();
+      // Salir button logic
+      document.addEventListener("DOMContentLoaded", function () {
+        const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
+        if (!localStorage.getItem("token")) {
+          salirBtn.style.display = "none";
+        } else {
+          salirBtn.style.display = "inline-block";
+          salirBtn.onclick = function (e) {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            localStorage.removeItem("datosToken");
+            localStorage.removeItem("usuario");
+            window.location.href = "login.html";
+          };
+        }
+      });
+    </script>
+</body>
+</html>

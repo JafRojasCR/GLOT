@@ -4,6 +4,7 @@ const { Schema, model } = require("mongoose");
 const usuarioSchema = new Schema({
   username: { type: String, required: true, unique: true },
   clave: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
   puntos: { type: Number, default: 0 },
   registrado_el: { type: Date, default: Date.now },
   juegos_creados: { type: Number, default: 0 },

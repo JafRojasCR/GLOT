@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>G/LOT - Registrarse</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .comfortaa {
+        font-family: "Comfortaa", cursive;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-50 text-gray-800 comfortaa min-h-screen flex items-center justify-center"
+  >
+    <div
+      class="bg-white p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-lg text-center mx-4"
+    >
+      <div
+        id="rulesPanel"
+        class="fixed top-0 left-0 h-full w-80 bg-white shadow-2xl p-8 text-left transition-transform duration-500 ease-in-out z-50"
+        style="transform: translateX(-100%)"
+      >
+        <h2 class="text-2xl font-bold mb-4 text-blue-400">
+          Reglas para registrarse
+        </h2>
+        <ul id="rulesList" class="list-disc pl-5 text-base">
+          <li id="rule-username">
+            El nombre de usuario debe tener al menos 4 caracteres.
+          </li>
+          <li id="rule-password-length">
+            La contraseña debe tener al menos 8 caracteres.
+          </li>
+          <li id="rule-password-number">
+            La contraseña debe incluir al menos un número.
+          </li>
+          <li id="rule-password-symbol">
+            La contraseña debe incluir al menos un símbolo especial.
+          </li>
+          <li id="rule-email">El correo electrónico debe ser válido.</li>
+        </ul>
+        <button
+          onclick="closeRulesPanel()"
+          class="mt-6 bg-green-400 hover:bg-green-500 text-white font-bold py-2 px-6 rounded-full text-base shadow-lg transition duration-300"
+        >
+          Cerrar
+        </button>
+      </div>
+      <h1 class="text-4xl font-bold mb-6 text-green-400">Regístrate</h1>
+      <div class="space-y-6">
+        <div>
+          <input
+            type="text"
+            id="inputnombre"
+            required="true"
+            placeholder="Nombre de usuario"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+          />
+        </div>
+        <div>
+          <input
+            type="email"
+            id="inputemail"
+            required="true"
+            placeholder="Correo electrónico"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            id="inputpassword"
+            required="true"
+            placeholder="Contraseña"
+            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+          />
+        </div>
+        <button
+          onclick="verify()"
+          class="w-full bg-green-400 hover:bg-green-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg transition duration-300"
+        >
+          Crear Cuenta
+        </button>
+        <div class="mt-6 text-sm">
+          <p>
+            ¿Ya tienes una cuenta?
+            <a
+              href="login.html"
+              class="text-blue-400 hover:text-blue-500 transition duration-200"
+              >Inicia sesión aquí</a
+            >
+          </p>
+          <p>
+            <a
+              href="index.html"
+              class="text-gray-500 hover:text-gray-700 transition duration-200 mt-2 block"
+              >Volver al inicio</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+    <script>
+      function updateRulesPanel() {
+        const username = document.getElementById("inputnombre").value;
+        const password = document.getElementById("inputpassword").value;
+        const email = document.getElementById("inputemail").value;
+
+        // Username rule
+        const usernameRule = document.getElementById("rule-username");
+        if (username.length >= 4) {
+          usernameRule.classList.add("text-green-500");
+          usernameRule.classList.remove("text-red-500");
+        } else {
+          usernameRule.classList.add("text-red-500");
+          usernameRule.classList.remove("text-green-500");
+        }
+
+        // Password length rule
+        const passwordLengthRule = document.getElementById(
+          "rule-password-length"
+        );
+        if (password.length >= 8) {
+          passwordLengthRule.classList.add("text-green-500");
+          passwordLengthRule.classList.remove("text-red-500");
+        } else {
+          passwordLengthRule.classList.add("text-red-500");
+          passwordLengthRule.classList.remove("text-green-500");
+        }
+
+        // Password number rule
+        const passwordNumberRule = document.getElementById(
+          "rule-password-number"
+        );
+        if (/[0-9]/.test(password)) {
+          passwordNumberRule.classList.add("text-green-500");
+          passwordNumberRule.classList.remove("text-red-500");
+        } else {
+          passwordNumberRule.classList.add("text-red-500");
+          passwordNumberRule.classList.remove("text-green-500");
+        }
+
+        // Password symbol rule
+        const passwordSymbolRule = document.getElementById(
+          "rule-password-symbol"
+        );
+        if (/[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>/?]/.test(password)) {
+          passwordSymbolRule.classList.add("text-green-500");
+          passwordSymbolRule.classList.remove("text-red-500");
+        } else {
+          passwordSymbolRule.classList.add("text-red-500");
+          passwordSymbolRule.classList.remove("text-green-500");
+        }
+
+        // Email rule
+        const emailRule = document.getElementById("rule-email");
+        if (email && email.includes("@") && email.includes(".")) {
+          emailRule.classList.add("text-green-500");
+          emailRule.classList.remove("text-red-500");
+        } else {
+          emailRule.classList.add("text-red-500");
+          emailRule.classList.remove("text-green-500");
+        }
+      }
+
+      function openRulesPanel() {
+        document.getElementById("rulesPanel").style.transform = "translateX(0)";
+        updateRulesPanel();
+      }
+      function closeRulesPanel() {
+        document.getElementById("rulesPanel").style.transform =
+          "translateX(-100%)";
+      }
+      function verify() {
+        const username = document.getElementById("inputnombre").value;
+        const password = document.getElementById("inputpassword").value;
+        const email = document.getElementById("inputemail").value;
+        // Show panel if any rule fails
+        if (
+          username.length < 4 ||
+          password.length < 8 ||
+          !/[0-9]/.test(password) ||
+          !/[!@#$%^&*()_+\-=[\]{};':\"\\|,.<>/?]/.test(password) ||
+          !email ||
+          !email.includes("@") ||
+          !email.includes(".")
+        ) {
+          openRulesPanel();
+          return false;
+        }
+        registrar();
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
+        if (!localStorage.getItem("token")) {
+          salirBtn.style.display = "none";
+        } else {
+          salirBtn.style.display = "inline-block";
+          salirBtn.onclick = function (e) {
+            e.preventDefault();
+            localStorage.removeItem("token");
+            localStorage.removeItem("datosToken");
+            localStorage.removeItem("usuario");
+            window.location.href = "login.html";
+          };
+        }
+        document
+          .getElementById("inputnombre")
+          .addEventListener("input", updateRulesPanel);
+        document
+          .getElementById("inputpassword")
+          .addEventListener("input", updateRulesPanel);
+        document
+          .getElementById("inputemail")
+          .addEventListener("input", updateRulesPanel);
+      });
+
+      // Loading screen HTML (hidden by default)
+      const loadingScreenHtml = `
+  <div id="glot-loading" class="fixed inset-0 flex flex-col items-center justify-center bg-white z-[100] transition-all duration-700 opacity-0 scale-95" style="display:none;">
+    <div class="flex flex-col items-center justify-center">
+      <div class="flex items-center mb-6">
+        <span id="bienvenido-txt" class="text-4xl font-bold text-green-400 comfortaa mr-4 animate-fade">Bienvenido a</span>
+        <img src="./img/GLOT Logo.png" alt="G/LOT Logo" class="h-16 w-auto inline-block" />
+      </div>
+      <div class="w-80 h-4 bg-gray-200 rounded-full overflow-hidden mb-6">
+        <div id="loading-bar" class="h-full bg-green-400 transition-all duration-300" style="width:0%"></div>
+      </div>
+      <button id="go-login-btn" class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-8 rounded-full text-lg shadow-lg transition duration-300" style="display:none;">Comenzar a Aprender</button>
+    </div>
+  </div>
+`;
+      document.body.insertAdjacentHTML("beforeend", loadingScreenHtml);
+
+      // Languages for "Bienvenido a"
+      const welcomeLangs = [
+        "Bienvenido a", // Spanish
+        "Welcome to", // English
+        "Bienvenue à", // French
+        "Willkommen bei", // German
+        "Benvenuto a", // Italian
+        "Bem-vindo ao", // Portuguese
+        "欢迎来到", // Chinese
+        "ようこそ", // Japanese
+        "Добро пожаловать в", // Russian
+        "Welkom bij", // Dutch
+        "Witamy w", // Polish
+        "Välkommen till", // Swedish
+        "환영합니다", // Korean
+      ];
+
+      function showLoadingScreen() {
+        const loadingDiv = document.getElementById("glot-loading");
+        loadingDiv.style.display = "flex";
+        setTimeout(() => {
+          loadingDiv.classList.remove("opacity-0", "scale-95");
+          loadingDiv.classList.add("opacity-100", "scale-100");
+        }, 10);
+        let idx = 0;
+        const bienvenidoTxt = document.getElementById("bienvenido-txt");
+        // Animate language rolling (indefinitely)
+        setInterval(() => {
+          bienvenidoTxt.classList.remove("animate-fade");
+          void bienvenidoTxt.offsetWidth;
+          bienvenidoTxt.textContent = welcomeLangs[idx] + " ";
+          bienvenidoTxt.classList.add("animate-fade");
+          idx = (idx + 1) % welcomeLangs.length;
+        }, 700);
+
+        // Animate loading bar
+        const loadingBar = document.getElementById("loading-bar");
+        const goLoginBtn = document.getElementById("go-login-btn");
+        const duration = Math.floor(Math.random() * 3000) + 4000; // 4000-7000 ms
+        let start = null;
+        function animateBar(ts) {
+          if (!start) start = ts;
+          const progress = Math.min((ts - start) / duration, 1);
+          loadingBar.style.width = progress * 100 + "%";
+          if (progress < 1) {
+            requestAnimationFrame(animateBar);
+          } else {
+            goLoginBtn.style.display = "block";
+            goLoginBtn.onclick = () => {
+              window.location.href = "login.html";
+            };
+          }
+        }
+        requestAnimationFrame(animateBar);
+      }
+
+      // Add fade and appear animation
+      const style = document.createElement("style");
+      style.innerHTML = `
+  @keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  .animate-fade {
+    animation: fadeInOut 0.7s;
+  }
+  #glot-loading.opacity-0 {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  #glot-loading.opacity-100 {
+    opacity: 1;
+    transform: scale(1);
+  }
+`;
+      document.head.appendChild(style);
+
+      // Call showLoadingScreen after registration before redirect
+      async function registrar() {
+        const username = document.getElementById("inputnombre").value;
+        const password = document.getElementById("inputpassword").value;
+        const email = document.getElementById("inputemail").value;
+
+        const datos = {
+          username,
+          clave: password,
+          email,
+        };
+
+        // Enviar datos para crear un nuevo usuario (POST)
+        const respuesta = await fetch("/api/usuarios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos),
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al registrar usuario");
+        }
+        const resultado = await respuesta.json();
+        console.log("Usuario registrado:", resultado);
+        showLoadingScreen();
+        // The redirect is now handled by the loading screen button
+      }
+    </script>
+  </body>
+</html>
