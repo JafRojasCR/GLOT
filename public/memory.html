@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <link rel="icon" type="image/x-icon" href="img/GLOTIcon.png" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>G/LOT - Memoria</title>
@@ -211,7 +212,7 @@
           const res = await fetch("/api/verify-token", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token })
+            body: JSON.stringify({ token }),
           });
           const result = await res.json();
           if (!result.valid) {
@@ -224,7 +225,7 @@
       }
       verifyTokenOrRedirect();
       // Salir button logic
-      
+
       function goBack() {
         localStorage.removeItem("lesson_id");
         window.location.href = "lessons.html";

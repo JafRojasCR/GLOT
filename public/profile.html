@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <link rel="icon" type="image/x-icon" href="img/GLOTIcon.png" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Existing content of the HTML file -->
 
     <script>
@@ -20,7 +21,7 @@
           const res = await fetch("/api/verify-token", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token })
+            body: JSON.stringify({ token }),
           });
           const result = await res.json();
           if (!result.valid) {
@@ -49,5 +50,5 @@
         }
       });
     </script>
-</body>
+  </body>
 </html>
