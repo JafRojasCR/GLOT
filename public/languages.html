@@ -18,6 +18,65 @@
       .flagImg {
         border: 1px solid black;
       }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 50;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out;
+      }
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal-content {
+        background-color: white;
+        padding: 2.5rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        transform: translateY(-20px);
+        transition: transform 0.3s ease-in-out;
+      }
+      .modal-overlay.active .modal-content {
+        transform: translateY(0);
+      }
+      
+      .tooltip-bubble {
+        bottom: 100%;
+        right: 50%;
+        transform: translateX(50%) translateY(-10px);
+        z-index: 10;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+      }
+      .tooltip-bubble::before {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 15px solid #fff;
+      }
+      .tooltip-container:hover .tooltip-bubble {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(50%) translateY(0);
+      }
     </style>
   </head>
   <body class="bg-gray-50 text-gray-800 comfortaa min-h-screen">
@@ -58,6 +117,7 @@
       ></div>
       <div class="fixed bottom-8 right-8 z-50">
         <button
+          id="add-language-btn"
           class="bg-blue-400 hover:bg-blue-500 text-white p-6 rounded-full shadow-lg transition duration-300 transform hover:scale-110"
         >
           <svg
@@ -77,6 +137,59 @@
         </button>
       </div>
     </main>
+
+    <!-- Modal para agregar idioma -->
+    <div id="add-language-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h2 class="text-2xl font-bold mb-4">Agregar Nuevo Idioma</h2>
+        <form id="add-language-form" class="space-y-4">
+          <div>
+            <label for="language-name" class="block text-left mb-1">Nombre</label>
+            <input
+              type="text"
+              id="language-name"
+              class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Ej: Portugués"
+              required
+            />
+          </div>
+          <div class="relative tooltip-container">
+            <label for="language-code" class="block text-left mb-1">Código
+              <span class="text-gray-400 cursor-pointer text-xl">?</span>
+            </label>
+            <div class="tooltip-bubble absolute bg-white p-4 rounded-lg shadow-md w-64 text-sm text-left">
+              <p class="font-bold mb-2">Códigos de Países:</p>
+              <p>El código debe ser de 2 letras, basado en el estándar de banderas de países (ISO 3166-1 alpha-2).</p>
+              <p>Ejemplo: Español = ES</p>
+              <p class="mt-2">Puedes buscar los códigos <a href="https://www.iso.org/obp/ui/#search" target="_blank" class="text-blue-400 hover:underline">aquí</a>.</p>
+            </div>
+            <input
+              type="text"
+              id="language-code"
+              class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 uppercase"
+              placeholder="Ej: BR"
+              maxlength="2"
+              required
+            />
+          </div>
+          <div class="flex justify-end space-x-4 mt-6">
+            <button
+              type="button"
+              id="cancel-add-btn"
+              class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full transition duration-300"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+            >
+              Registrar Idioma
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <script>
       // Verificar token antes de mostrar la página
@@ -117,107 +230,154 @@
             window.location.href = "login.html";
           };
         }
-      });
-      const idiomas = [
-        {
-          _id: "63123772bd37rb8",
-          nombre: "Portugués",
-          codigo: "BR",
-          cantidad_lecciones: 14,
-          usuarios_aprendiendo: 2,
-        },
-        {
-          _id: "63123772bd37ra9",
-          nombre: "Español",
-          codigo: "ES",
-          cantidad_lecciones: 14,
-          usuarios_aprendiendo: 2,
-        },
-        {
-          _id: "63123772bd37ra1",
-          nombre: "Inglés",
-          codigo: "US",
-          cantidad_lecciones: 14,
-          usuarios_aprendiendo: 2,
-        },
-        {
-          _id: "63123772bd37rb4",
-          nombre: "Francés",
-          codigo: "FR",
-          cantidad_lecciones: 8,
-          usuarios_aprendiendo: 5,
-        },
-        {
-          _id: "63123772bd37rb6",
-          nombre: "Alemán",
-          codigo: "DE",
-          cantidad_lecciones: 10,
-          usuarios_aprendiendo: 3,
-        },
-        {
-          _id: "63123772bd37rb1",
-          nombre: "Japonés",
-          codigo: "JP",
-          cantidad_lecciones: 22,
-          usuarios_aprendiendo: 8,
-        },
-      ];
 
-      const container = document.getElementById("idioma-container");
+        const idiomas = [
+          {
+            _id: "63123772bd37rb8",
+            nombre: "Portugués",
+            codigo: "BR",
+            cantidad_lecciones: 14,
+            usuarios_aprendiendo: 2,
+          },
+          {
+            _id: "63123772bd37ra9",
+            nombre: "Español",
+            codigo: "ES",
+            cantidad_lecciones: 14,
+            usuarios_aprendiendo: 2,
+          },
+          {
+            _id: "63123772bd37ra1",
+            nombre: "Inglés",
+            codigo: "US",
+            cantidad_lecciones: 14,
+            usuarios_aprendiendo: 2,
+          },
+          {
+            _id: "63123772bd37rb4",
+            nombre: "Francés",
+            codigo: "FR",
+            cantidad_lecciones: 8,
+            usuarios_aprendiendo: 5,
+          },
+          {
+            _id: "63123772bd37rb6",
+            nombre: "Alemán",
+            codigo: "DE",
+            cantidad_lecciones: 10,
+            usuarios_aprendiendo: 3,
+          },
+          {
+            _id: "63123772bd37rb1",
+            nombre: "Japonés",
+            codigo: "JP",
+            cantidad_lecciones: 22,
+            usuarios_aprendiendo: 8,
+          },
+          {
+            _id: "63123772bd37rb1",
+            nombre: "Alemán (sin lecciones)",
+            codigo: "DE",
+            cantidad_lecciones: 0,
+            usuarios_aprendiendo: 0,
+          },
+        ];
 
-      idiomas.forEach((idioma) => {
-        const card = document.createElement("div");
-        card.classList.add(
-          "bg-white",
-          "rounded-xl",
-          "shadow-lg",
-          "p-6",
-          "flex",
-          "flex-col",
-          "items-center",
-          "text-center",
-          "border-2",
-          "border-transparent",
-          "hover:border-blue-400",
-          "transition",
-          "duration-300",
-          "cursor-pointer"
-        );
-        card.onclick = () => {
-          localStorage.setItem("lang", idioma.nombre);
-          localStorage.setItem("code", idioma.codigo);
-          window.location.href = `lessons.html`;
-        };
+        const container = document.getElementById("idioma-container");
 
-        const flagImg = document.createElement("img");
-        flagImg.src = `https://flagcdn.com/w160/${idioma.codigo.toLowerCase()}.png`;
-        flagImg.alt = `Bandera de ${idioma.nombre}`;
-        flagImg.classList.add(
-          "w-20",
-          "h-auto",
-          "rounded-lg",
-          "mb-4",
-          "flagImg"
-        );
+        function renderLanguages() {
+          container.innerHTML = '';
+          const filteredIdiomas = idiomas.filter(idioma => idioma.cantidad_lecciones > 0);
+          filteredIdiomas.forEach((idioma) => {
+            const card = document.createElement("div");
+            card.classList.add(
+              "bg-white",
+              "rounded-xl",
+              "shadow-lg",
+              "p-6",
+              "flex",
+              "flex-col",
+              "items-center",
+              "text-center",
+              "border-2",
+              "border-transparent",
+              "hover:border-blue-400",
+              "transition",
+              "duration-300",
+              "cursor-pointer"
+            );
+            card.onclick = () => {
+              localStorage.setItem("lang", idioma.nombre);
+              localStorage.setItem("code", idioma.codigo);
+              window.location.href = `lessons.html`;
+            };
 
-        const nombre = document.createElement("h3");
-        nombre.classList.add("text-2xl", "font-semibold", "mb-2");
-        nombre.textContent = idioma.nombre;
+            const flagImg = document.createElement("img");
+            flagImg.src = `https://flagcdn.com/w160/${idioma.codigo.toLowerCase()}.png`;
+            flagImg.alt = `Bandera de ${idioma.nombre}`;
+            flagImg.classList.add(
+              "w-20",
+              "h-auto",
+              "rounded-lg",
+              "mb-4",
+              "flagImg"
+            );
 
-        const lecciones = document.createElement("p");
-        lecciones.classList.add("text-sm", "text-gray-500", "mb-1");
-        lecciones.textContent = `Lecciones: ${idioma.cantidad_lecciones}`;
+            const nombre = document.createElement("h3");
+            nombre.classList.add("text-2xl", "font-semibold", "mb-2");
+            nombre.textContent = idioma.nombre;
 
-        const usuarios = document.createElement("p");
-        usuarios.classList.add("text-sm", "text-gray-500");
-        usuarios.textContent = `Usuarios: ${idioma.usuarios_aprendiendo}`;
+            const lecciones = document.createElement("p");
+            lecciones.classList.add("text-sm", "text-gray-500", "mb-1");
+            lecciones.textContent = `Lecciones: ${idioma.cantidad_lecciones}`;
 
-        card.appendChild(flagImg);
-        card.appendChild(nombre);
-        card.appendChild(lecciones);
-        card.appendChild(usuarios);
+            const usuarios = document.createElement("p");
+            usuarios.classList.add("text-sm", "text-gray-500");
+            usuarios.textContent = `Usuarios: ${idioma.usuarios_aprendiendo}`;
 
-        container.appendChild(card);
+            card.appendChild(flagImg);
+            card.appendChild(nombre);
+            card.appendChild(lecciones);
+            card.appendChild(usuarios);
+
+            container.appendChild(card);
+          });
+        }
+        
+        renderLanguages();
+
+        const addLanguageBtn = document.getElementById('add-language-btn');
+        const addLanguageModal = document.getElementById('add-language-modal');
+        const cancelAddBtn = document.getElementById('cancel-add-btn');
+        const addLanguageForm = document.getElementById('add-language-form');
+
+        addLanguageBtn.addEventListener('click', () => {
+          addLanguageModal.classList.add('active');
+        });
+
+        cancelAddBtn.addEventListener('click', () => {
+          addLanguageModal.classList.remove('active');
+        });
+
+        addLanguageForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const name = document.getElementById('language-name').value;
+          const code = document.getElementById('language-code').value.toUpperCase();
+          
+          // Lógica para registrar el nuevo idioma, en un entorno real aquí harías una llamada a la API
+          const newId = (Math.random() + 1).toString(36).substring(7);
+          const newLanguage = {
+            _id: newId,
+            nombre: name,
+            codigo: code,
+            cantidad_lecciones: 0,
+            usuarios_aprendiendo: 1,
+          };
+          idiomas.push(newLanguage);
+          renderLanguages();
+          addLanguageModal.classList.remove('active');
+          addLanguageForm.reset();
+        });
       });
     </script>
   </body>
