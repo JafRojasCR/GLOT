@@ -162,9 +162,10 @@
         </div>
       </div>
       <img
-        src="https://flagcdn.com/w160/br.png"
-        alt="Bandera de Brasil"
+        src=""
+        alt=""
         class="w-10 md:w-12 h-auto rounded-md shadow-md"
+        id="language-flag"
       />
     </header>
 
@@ -230,20 +231,12 @@
         localStorage.removeItem("lesson_id");
         window.location.href = "lessons.html";
       }
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", async () => {
         
-        // CODE FOR GATHERING A LESSON BASED ON lesson_id FROM LOCALSTORAGE
+         const lessonid = localStorage.getItem("lesson_id");
 
-        const sampleLesson = {
-          _id: "767bh2bye72e",
-          idioma: "Portugués",
-          palabras: ["hola", "adiós", "ojo", "azul", "niño"],
-          traducciones: ["oi", "tchau", "olho", "azul", "menino"],
-          author: "JaJas",
-          creada_el: 17128371273,
-          players: ["JaJas", "RoRo", "user1"],
-          tipo: "Memoria",
-        };
+        const leccion = await obtenerLeccion(lessonid);
+       
 
         const gameBoard = document.getElementById("game-board");
         const matchCounter = document.getElementById("match-counter");
@@ -256,7 +249,7 @@
         let lockBoard = false;
         let matchesFound = 0;
         let tries = 0;
-        const totalPairs = sampleLesson.palabras.length;
+        const totalPairs = leccion.palabras.length;
 
         // Generate card data and shuffle
         function shuffle(array) {
@@ -269,10 +262,10 @@
 
         function createCards() {
           const pairs = [];
-          sampleLesson.palabras.forEach((word, index) => {
+          leccion.palabras.forEach((word, index) => {
             pairs.push({ text: word, match: `match-${index}` });
             pairs.push({
-              text: sampleLesson.traducciones[index],
+              text: leccion.traducciones[index],
               match: `match-${index}`,
             });
           });
@@ -309,6 +302,7 @@
 
           if (matchesFound === totalPairs) {
             showWinModal();
+            updateCounter(leccion._id, { jugadas: leccion.jugadas + 1 });
           }
         }
 
@@ -330,6 +324,21 @@
           winModalOverlay.classList.add("active");
           console.log("Juego completado. Intentos totales:", tries);
         }
+
+         
+      const languageCode = localStorage.getItem("code");
+
+      // Update the header text and flag
+      
+      const languageFlagElement = document.getElementById("language-flag");
+
+      
+
+        const countryCode = languageCode ? languageCode.toLowerCase() : null;
+        if (countryCode) {
+          languageFlagElement.src = `https://flagcdn.com/w160/${countryCode}.png`;
+        }
+      
 
         // Game initialization
         function initGame() {
@@ -355,6 +364,44 @@
 
         initGame();
       });
+
+      async function obtenerLeccion(id) {
+        const respuesta = await fetch(`/api/lecciones/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al registrar lección");
+        }
+        const resultado = await respuesta.json();
+       
+        return resultado;
+      }
+
+      async function updateCounter(id,datos) {
+        const respuesta = await fetch(`/api/lecciones/${id}/`, {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(datos),
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al registrar lección");
+        }
+        const resultado = await respuesta.json();
+
+        return resultado;
+      }
+
     </script>
   </body>
 </html>

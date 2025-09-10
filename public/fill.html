@@ -144,9 +144,10 @@
         </div>
       </div>
       <img
-        src="https://flagcdn.com/w160/br.png"
-        alt="Bandera de Brasil"
+        src=""
+        alt=""
         class="w-10 md:w-12 h-auto rounded-md shadow-md"
+        id="language-flag"
       />
     </header>
 
@@ -216,20 +217,10 @@
         window.location.href = "lessons.html";
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
+      document.addEventListener("DOMContentLoaded", async () => {
+        const lessonid = localStorage.getItem("lesson_id");
 
-// CODE FOR GATHERING A LESSON BASED ON lesson_id FROM LOCALSTORAGE
-
-        const sampleLesson = {
-          _id: "876k7l12m",
-          idioma: "Portugués",
-          palabras: ["Adiós", "Hola", "Ojo", "Azul", "Niño"],
-          traducciones: ["Tchau", "Oi", "Olho", "Azul", "Menino"],
-          author: "JaJa",
-          creada_el: 17128371274,
-          players: ["JaJa", "user1", "user2"],
-          tipo: "Rellenar",
-        };
+        const leccion = await obtenerLeccion(lessonid);
 
         const gameContainer = document.getElementById("game-container");
         const matchCounter = document.getElementById("match-counter");
@@ -239,9 +230,18 @@
 
         let tries = 0;
         let correctMatches = 0;
-        const totalPairs = sampleLesson.palabras.length;
+        const totalPairs = leccion.palabras.length;
         const correctWords = new Set();
+        const languageCode = localStorage.getItem("code");
 
+        // Update the header text and flag
+
+        const languageFlagElement = document.getElementById("language-flag");
+
+        const countryCode = languageCode ? languageCode.toLowerCase() : null;
+        if (countryCode) {
+          languageFlagElement.src = `https://flagcdn.com/w160/${countryCode}.png`;
+        }
         function initGame() {
           gameContainer.innerHTML = "";
           correctWords.clear();
@@ -249,9 +249,9 @@
           correctMatches = 0;
           updateCounters();
 
-          for (let i = 0; i < sampleLesson.palabras.length; i++) {
-            const originalWord = sampleLesson.palabras[i];
-            const translation = sampleLesson.traducciones[i];
+          for (let i = 0; i < leccion.palabras.length; i++) {
+            const originalWord = leccion.palabras[i];
+            const translation = leccion.traducciones[i];
             const randomIndex = Math.floor(Math.random() * translation.length);
             const missingLetter = translation[randomIndex];
 
@@ -331,6 +331,7 @@
                 updateCounters();
                 if (correctMatches === totalPairs) {
                   showWinModal();
+                  updateCounter(leccion._id, { jugadas: leccion.jugadas + 1 });
                 }
               }
             } else {
@@ -379,6 +380,43 @@
 
         initGame();
       });
+
+      async function obtenerLeccion(id) {
+        const respuesta = await fetch(`/api/lecciones/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al registrar lección");
+        }
+        const resultado = await respuesta.json();
+
+        return resultado;
+      }
+
+      async function updateCounter(id, datos) {
+        const respuesta = await fetch(`/api/lecciones/${id}/`, {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(datos),
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al registrar lección");
+        }
+        const resultado = await respuesta.json();
+
+        return resultado;
+      }
     </script>
   </body>
 </html>

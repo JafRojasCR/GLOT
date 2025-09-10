@@ -42,15 +42,15 @@ exports.crearIdioma = async (req, res) => {
 
 exports.actualizarIdioma = async (req, res) => {
   try {
-    const { id } = req.params;
-    const { nombre, codigo } = req.body;
+    const { nombre } = req.params;
+    const { cantidad_lecciones } = req.body;
     // Validar que se proporcionaron los campos requeridos
-    if (!nombre || !codigo) {
+    if (!cantidad_lecciones) {
       return res.status(400).json({ error: "Faltan campos requeridos" });
     }
-    const idiomaActualizado = await Idioma.findByIdAndUpdate(
-      id,
-      { nombre, codigo },
+    const idiomaActualizado = await Idioma.findOneAndUpdate(
+      { nombre },
+      { cantidad_lecciones },
       { new: true }
     );
     if (!idiomaActualizado) {

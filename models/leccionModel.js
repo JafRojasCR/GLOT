@@ -7,7 +7,7 @@ const leccionSchema = new Schema({
   traducciones: { type: [String], default: [], required: true },
   autor: { type: String, required: true },
   creada_el: { type: Date, default: Date.now },
-  jugadores: { type: [String], default: [] },
+  jugadas: { type: Number, default: 0 },
   tipo: { type: String, required: true },
 });
 

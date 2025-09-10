@@ -12,6 +12,20 @@ exports.obtenerLecciones = async (req, res) => {
   }
 };
 
+exports.obtenerLeccionPorId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const leccion = await Leccion.findById(id);
+    if (!leccion) {
+      return res.status(404).json({ error: "Lección no encontrada" });
+    }
+    res.json(leccion);
+  } catch (error) {
+    console.error("Error al obtener lección por ID:", error);
+    res.status(500).json({ error: "Error al obtener lección por ID" });
+  }
+};
+
 exports.crearLeccion = async (req, res) => {
   try {
     const { idioma, palabras, traducciones, autor, tipo } = req.body;
@@ -36,11 +50,11 @@ exports.crearLeccion = async (req, res) => {
 exports.actualizarLeccion = async (req, res) => {
   try {
     const { id } = req.params;
-    const { idioma, palabras, traducciones, autor, tipo } = req.body;
+    const { jugadas } = req.body;
 
     const leccionActualizada = await Leccion.findByIdAndUpdate(
       id,
-      { idioma, palabras, traducciones, autor, tipo },
+      { jugadas },
       { new: true }
     );
 

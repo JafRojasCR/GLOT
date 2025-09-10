@@ -486,7 +486,6 @@
 
             const usuarios = document.createElement("p");
             usuarios.classList.add("text-sm", "text-gray-500");
-            usuarios.textContent = `Usuarios: ${idioma.usuarios_aprendiendo}`;
 
             card.appendChild(flagImg);
             card.appendChild(nombre);
@@ -588,7 +587,7 @@
             palabras: words,
             traducciones: translations,
             tipo: gameType,
-            jugadores: 0,
+            jugadas: 0,
             autor: localStorage.getItem("usuario"),
           };
 
@@ -639,7 +638,7 @@
           const idiomas = resultado.map((idioma) => ({
             nombre: idioma.nombre,
             codigo: idioma.codigo,
-            cantidad_lecciones: idioma.lecciones ? idioma.lecciones.length : 0,
+            cantidad_lecciones: idioma.cantidad_lecciones ? idioma.cantidad_lecciones : 0,
             usuarios_aprendiendo: 0, // Este dato debería venir del backend
           }));
           return idiomas;
@@ -659,8 +658,29 @@
             const error = await respuesta.json();
             throw new Error(error.error || "Error al registrar lección");
           }
+
           const resultado = await respuesta.json();
           console.log("Lección registrada:", resultado);
+
+          const idiomaNombre = datos.idioma;
+
+          const updateIdioma = await fetch(`/api/idiomas/${idiomaNombre}`, {
+            method: "PUT",
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              cantidad_lecciones:
+                idiomas.find((i) => i.nombre === datos.idioma)
+                  .cantidad_lecciones + 1,
+              
+            }),
+          });
+          if (!updateIdioma.ok) {
+            const error = await updateIdioma.json();
+            throw new Error(error.error || "Error al actualizar idioma");
+          }
         }
       });
     </script>

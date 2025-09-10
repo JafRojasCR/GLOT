@@ -178,9 +178,10 @@
         </div>
       </div>
       <img
-        src="https://flagcdn.com/w160/br.png"
-        alt="Bandera de Brasil"
+        src=""
+        alt=""
         class="w-10 md:w-12 h-auto rounded-md shadow-md"
+        id="language-flag"
       />
     </header>
 
@@ -341,21 +342,10 @@
         window.location.href = "lessons.html";
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
-
+      document.addEventListener("DOMContentLoaded", async () => {
         const lessonid = localStorage.getItem("lesson_id");
-        
 
-        const sampleLesson = {
-          _id: "767bh2bye72e",
-          idioma: "Portugués",
-          palabras: ["hola", "adiós", "ojo", "azul", "niño"],
-          traducciones: ["oi", "tchau", "olho", "azul", "menino"],
-          author: "JaJas",
-          creada_el: 17128371273,
-          players: ["JaJas", "RoRo", "user1"],
-          tipo: "Asociar",
-        };
+        const leccion = await obtenerLeccion(lessonid);
 
         const wordsColumn = document.getElementById("words-column");
         const dropZonesColumn = document.getElementById("drop-zones-column");
@@ -369,22 +359,31 @@
 
         let tries = 0;
         let correctMatches = 0;
-        const totalPairs = sampleLesson.palabras.length;
+        const totalPairs = leccion.palabras.length;
+        const languageCode = localStorage.getItem("code");
 
+        // Update the header text and flag
+
+        const languageFlagElement = document.getElementById("language-flag");
+
+        const countryCode = languageCode ? languageCode.toLowerCase() : null;
+        if (countryCode) {
+          languageFlagElement.src = `https://flagcdn.com/w160/${countryCode}.png`;
+        }
         function initGame() {
           wordsColumn.innerHTML = "";
           dropZonesColumn.innerHTML = "";
           translationsContainer.innerHTML = "";
 
           const matches = [];
-          for (let i = 0; i < sampleLesson.palabras.length; i++) {
+          for (let i = 0; i < leccion.palabras.length; i++) {
             matches.push({
-              word: sampleLesson.palabras[i],
-              translation: sampleLesson.traducciones[i],
+              word: leccion.palabras[i],
+              translation: leccion.traducciones[i],
             });
           }
 
-          const shuffledTranslations = shuffle(sampleLesson.traducciones);
+          const shuffledTranslations = shuffle(leccion.traducciones);
 
           matches.forEach((pair) => {
             const wordCard = document.createElement("div");
@@ -476,6 +475,7 @@
             updateCounters();
             if (correctMatches === totalPairs) {
               showWinModal();
+              updateCounter(leccion._id, { jugadas: leccion.jugadas + 1 });
             }
           } else {
             draggedItem.classList.remove("hidden");
@@ -517,6 +517,43 @@
 
         initGame();
       });
+
+      async function obtenerLeccion(id) {
+        const respuesta = await fetch(`/api/lecciones/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al registrar lección");
+        }
+        const resultado = await respuesta.json();
+
+        return resultado;
+      }
+
+      async function updateCounter(id, datos) {
+        const respuesta = await fetch(`/api/lecciones/${id}/`, {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(datos),
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al registrar lección");
+        }
+        const resultado = await respuesta.json();
+
+        return resultado;
+      }
     </script>
   </body>
 </html>

@@ -179,7 +179,7 @@
 
       // Generate cards for the filtered lessons
       filteredLecciones.forEach((leccion) => {
-        const playerCount = leccion.jugadores.length;
+        const playerCount = leccion.jugadas;
         const card = document.createElement("div");
         card.classList.add(
           "bg-white",
@@ -238,7 +238,7 @@
 
         const jugadores = document.createElement("p");
         jugadores.classList.add("text-sm", "text-gray-500");
-        jugadores.textContent = `Jugadores: ${playerCount}`;
+        jugadores.textContent = `Jugadas: ${playerCount}`;
 
         card.appendChild(imgPlaceholder);
         card.appendChild(tipoLeccion);
@@ -269,7 +269,7 @@
           _id: leccion._id,
           idioma: leccion.idioma,
           autor: leccion.autor,
-          jugadores: leccion.jugadores,
+          jugadas: leccion.jugadas,
           tipo: leccion.tipo,
         }));
         return lecciones;
