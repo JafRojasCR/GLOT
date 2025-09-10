@@ -217,6 +217,9 @@
       }
 
       document.addEventListener("DOMContentLoaded", () => {
+
+// CODE FOR GATHERING A LESSON BASED ON lesson_id FROM LOCALSTORAGE
+
         const sampleLesson = {
           _id: "876k7l12m",
           idioma: "Portugués",
@@ -369,7 +372,7 @@
         }
 
         function showWinModal() {
-          finalTriesText.textContent = `Número de intentos: ${tries}`;
+          finalTriesText.textContent = `Número de intentos fallidos: ${tries}`;
           winModalOverlay.classList.add("active");
           console.log("Juego completado. Intentos totales:", tries);
         }

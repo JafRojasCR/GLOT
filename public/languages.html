@@ -14,11 +14,9 @@
       .comfortaa {
         font-family: "Comfortaa", cursive;
       }
-
       .flagImg {
         border: 1px solid black;
       }
-
       .modal-overlay {
         position: fixed;
         top: 0;
@@ -46,11 +44,12 @@
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         transform: translateY(-20px);
         transition: transform 0.3s ease-in-out;
+        width: 90%;
+        max-width: 600px;
       }
       .modal-overlay.active .modal-content {
         transform: translateY(0);
       }
-      
       .tooltip-bubble {
         bottom: 100%;
         right: 50%;
@@ -61,7 +60,7 @@
         transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
       }
       .tooltip-bubble::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 100%;
         left: 50%;
@@ -77,12 +76,34 @@
         pointer-events: auto;
         transform: translateX(50%) translateY(0);
       }
+      .tab-button.active {
+        border-bottom: 2px solid #60a5fa;
+        color: #60a5fa;
+      }
+      .form-transition-container {
+        position: relative;
+        overflow: hidden;
+      }
+      .form-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(100%);
+      }
+      .form-content.active {
+        position: relative;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateX(0);
+      }
     </style>
   </head>
   <body class="bg-gray-50 text-gray-800 comfortaa min-h-screen">
-    <nav
-      class="flex items-center justify-between px-6 py-4 border-b bg-white w-full"
-    >
+    <nav class="flex items-center justify-between px-6 py-4 border-b w-full">
       <div class="flex items-center space-x-2">
         <img src="./img/GLOT Logo.png" alt="G/LOT Logo" class="h-10 w-auto" />
       </div>
@@ -138,61 +159,222 @@
       </div>
     </main>
 
-    <!-- Modal para agregar idioma -->
-    <div id="add-language-modal" class="modal-overlay">
+    <!-- Modal para agregar idioma/lección -->
+    <div id="add-modal" class="modal-overlay" style="display: none">
       <div class="modal-content">
-        <h2 class="text-2xl font-bold mb-4">Agregar Nuevo Idioma</h2>
-        <form id="add-language-form" class="space-y-4">
-          <div>
-            <label for="language-name" class="block text-left mb-1">Nombre</label>
-            <input
-              type="text"
-              id="language-name"
-              class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="Ej: Portugués"
-              required
-            />
+        <!-- Pestañas de navegación -->
+        <div class="flex justify-center mb-6">
+          <button
+            id="tab-idioma"
+            class="tab-button text-gray-500 font-bold px-4 py-2 mx-2 transition duration-300 ease-in-out hover:text-blue-400 hover:border-blue-400 active"
+          >
+            Idioma
+          </button>
+          <button
+            id="tab-leccion"
+            class="tab-button text-gray-500 font-bold px-4 py-2 mx-2 transition duration-300 ease-in-out hover:text-blue-400 hover:border-blue-400"
+          >
+            Lección
+          </button>
+        </div>
+
+        <div class="form-transition-container">
+          <!-- Formulario de Idioma -->
+          <div id="form-idioma" class="form-content active">
+            <h2 class="text-2xl font-bold mb-4">Agregar Nuevo Idioma</h2>
+            <form id="add-language-form" class="space-y-4">
+              <div>
+                <label for="language-name" class="block text-left mb-1"
+                  >Nombre</label
+                >
+                <input
+                  type="text"
+                  id="language-name"
+                  class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  placeholder="Ej: Portugués"
+                  required
+                />
+              </div>
+              <div class="relative tooltip-container">
+                <label for="language-code" class="block text-left mb-1"
+                  >Código
+                  <span class="text-gray-400 cursor-pointer text-xl">?</span>
+                </label>
+                <div
+                  class="tooltip-bubble absolute bg-white p-4 rounded-lg shadow-md w-64 text-sm text-left"
+                >
+                  <p class="font-bold mb-2">Códigos de Países:</p>
+                  <p>
+                    El código debe ser de 2 letras, basado en el estándar de
+                    banderas de países.
+                  </p>
+                  <p>Ejemplo: Español = ES</p>
+                  <p class="mt-2">
+                    Busca tu código
+                    <a
+                      href="https://www.iso.org/obp/ui/#search"
+                      target="_blank"
+                      class="text-blue-400 hover:underline"
+                      >aquí</a
+                    >.
+                  </p>
+                </div>
+                <input
+                  type="text"
+                  id="language-code"
+                  class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 uppercase"
+                  placeholder="Ej: BR"
+                  maxlength="2"
+                  required
+                />
+              </div>
+              <div class="flex justify-end space-x-4 mt-6">
+                <button
+                  type="button"
+                  id="cancel-add-btn"
+                  class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full transition duration-300"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+                >
+                  Registrar Idioma
+                </button>
+              </div>
+            </form>
           </div>
-          <div class="relative tooltip-container">
-            <label for="language-code" class="block text-left mb-1">Código
-              <span class="text-gray-400 cursor-pointer text-xl">?</span>
-            </label>
-            <div class="tooltip-bubble absolute bg-white p-4 rounded-lg shadow-md w-64 text-sm text-left">
-              <p class="font-bold mb-2">Códigos de Países:</p>
-              <p>El código debe ser de 2 letras, basado en el estándar de banderas de países (ISO 3166-1 alpha-2).</p>
-              <p>Ejemplo: Español = ES</p>
-              <p class="mt-2">Puedes buscar los códigos <a href="https://www.iso.org/obp/ui/#search" target="_blank" class="text-blue-400 hover:underline">aquí</a>.</p>
-            </div>
-            <input
-              type="text"
-              id="language-code"
-              class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 uppercase"
-              placeholder="Ej: BR"
-              maxlength="2"
-              required
-            />
+
+          <!-- Formulario de Lección -->
+          <div id="form-leccion" class="form-content">
+            <h2 class="text-2xl font-bold mb-4">Agregar Nueva Lección</h2>
+            <form id="add-lesson-form" class="space-y-4 text-left">
+              <div>
+                <label for="lesson-language-select" class="block mb-1"
+                  >Selecciona el idioma</label
+                >
+                <select
+                  id="lesson-language-select"
+                  class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required
+                ></select>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block mb-1">Palabras Base</label>
+                  <input
+                    type="text"
+                    name="word1"
+                    placeholder="Palabra 1"
+                    class="w-full border rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="word2"
+                    placeholder="Palabra 2"
+                    class="w-full border rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="word3"
+                    placeholder="Palabra 3"
+                    class="w-full border rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="word4"
+                    placeholder="Palabra 4"
+                    class="w-full border rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="word5"
+                    placeholder="Palabra 5"
+                    class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="block mb-1">Traducciones</label>
+                  <input
+                    type="text"
+                    name="translation1"
+                    placeholder="Traducción 1"
+                    class="w-full border rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="translation2"
+                    placeholder="Traducción 2"
+                    class="w-full border rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="translation3"
+                    placeholder="Traducción 3"
+                    class="w-full border rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="translation4"
+                    placeholder="Traducción 4"
+                    class="w-full border rounded-md px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="translation5"
+                    placeholder="Traducción 5"
+                    class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label for="lesson-game-type" class="block mb-1"
+                  >Tipo de juego</label
+                >
+                <select
+                  id="lesson-game-type"
+                  class="w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  required
+                >
+                  <option value="">Selecciona un tipo</option>
+                  <option value="Memoria">Memoria</option>
+                  <option value="Asociar">Asociar</option>
+                  <option value="Rellenar">Rellenar</option>
+                </select>
+              </div>
+              <div class="flex justify-end space-x-4 mt-6">
+                <button
+                  type="button"
+                  id="cancel-lesson-btn"
+                  class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full transition duration-300"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-full transition duration-300"
+                >
+                  Registrar Lección
+                </button>
+              </div>
+            </form>
           </div>
-          <div class="flex justify-end space-x-4 mt-6">
-            <button
-              type="button"
-              id="cancel-add-btn"
-              class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-full transition duration-300"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              class="bg-blue-400 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-full transition duration-300"
-            >
-              Registrar Idioma
-            </button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
 
     <script>
-      // Verificar token antes de mostrar la página
       async function verifyTokenOrRedirect() {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -215,8 +397,9 @@
         }
       }
       verifyTokenOrRedirect();
-
+      // Salir button logic
       document.addEventListener("DOMContentLoaded", function () {
+        localStorage.removeItem("lesson_id");
         const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
         if (!localStorage.getItem("token")) {
           salirBtn.style.display = "none";
@@ -227,68 +410,38 @@
             localStorage.removeItem("token");
             localStorage.removeItem("datosToken");
             localStorage.removeItem("usuario");
+            localStorage.removeItem("lang");
+            localStorage.removeItem("code");
             window.location.href = "login.html";
           };
         }
+      });
 
-        const idiomas = [
-          {
-            _id: "63123772bd37rb8",
-            nombre: "Portugués",
-            codigo: "BR",
-            cantidad_lecciones: 14,
-            usuarios_aprendiendo: 2,
-          },
-          {
-            _id: "63123772bd37ra9",
-            nombre: "Español",
-            codigo: "ES",
-            cantidad_lecciones: 14,
-            usuarios_aprendiendo: 2,
-          },
-          {
-            _id: "63123772bd37ra1",
-            nombre: "Inglés",
-            codigo: "US",
-            cantidad_lecciones: 14,
-            usuarios_aprendiendo: 2,
-          },
-          {
-            _id: "63123772bd37rb4",
-            nombre: "Francés",
-            codigo: "FR",
-            cantidad_lecciones: 8,
-            usuarios_aprendiendo: 5,
-          },
-          {
-            _id: "63123772bd37rb6",
-            nombre: "Alemán",
-            codigo: "DE",
-            cantidad_lecciones: 10,
-            usuarios_aprendiendo: 3,
-          },
-          {
-            _id: "63123772bd37rb1",
-            nombre: "Japonés",
-            codigo: "JP",
-            cantidad_lecciones: 22,
-            usuarios_aprendiendo: 8,
-          },
-          {
-            _id: "63123772bd37rb1",
-            nombre: "Alemán (sin lecciones)",
-            codigo: "DE",
-            cantidad_lecciones: 0,
-            usuarios_aprendiendo: 0,
-          },
-        ];
+      document.addEventListener("DOMContentLoaded", async function () {
+        idiomas = await obtenerIdiomas();
 
         const container = document.getElementById("idioma-container");
+        const addLanguageBtn = document.getElementById("add-language-btn");
+        const addModal = document.getElementById("add-modal");
+        const cancelAddBtn = document.getElementById("cancel-add-btn");
+        const addLanguageForm = document.getElementById("add-language-form");
+        const cancelLessonBtn = document.getElementById("cancel-lesson-btn");
+        const addLessonForm = document.getElementById("add-lesson-form");
+
+        const tabIdioma = document.getElementById("tab-idioma");
+        const tabLeccion = document.getElementById("tab-leccion");
+        const formIdioma = document.getElementById("form-idioma");
+        const formLeccion = document.getElementById("form-leccion");
+        const lessonLanguageSelect = document.getElementById(
+          "lesson-language-select"
+        );
 
         function renderLanguages() {
-          container.innerHTML = '';
-          const filteredIdiomas = idiomas.filter(idioma => idioma.cantidad_lecciones > 0);
-          filteredIdiomas.forEach((idioma) => {
+          container.innerHTML = "";
+
+          // CODIGO PARA TOMAR LOS IDIOMAS DE LA BASE DE DATOS
+
+          idiomas.forEach((idioma) => {
             const card = document.createElement("div");
             card.classList.add(
               "bg-white",
@@ -343,41 +496,172 @@
             container.appendChild(card);
           });
         }
-        
         renderLanguages();
 
-        const addLanguageBtn = document.getElementById('add-language-btn');
-        const addLanguageModal = document.getElementById('add-language-modal');
-        const cancelAddBtn = document.getElementById('cancel-add-btn');
-        const addLanguageForm = document.getElementById('add-language-form');
+        // Lógica de los modales
+        function openModal() {
+          // Llenar el select de idiomas
+          lessonLanguageSelect.innerHTML = "";
+          idiomas.forEach((idioma) => {
+            const option = document.createElement("option");
+            option.value = idioma.nombre;
+            option.textContent = idioma.nombre;
+            lessonLanguageSelect.appendChild(option);
+          });
+          addModal.style.display = "flex";
+          setTimeout(() => {
+            addModal.classList.add("active");
+          }, 10);
+        }
 
-        addLanguageBtn.addEventListener('click', () => {
-          addLanguageModal.classList.add('active');
-        });
+        function closeModal() {
+          addModal.classList.remove("active");
+          addLanguageForm.reset();
+          addLessonForm.reset();
+          setTimeout(() => {
+            addModal.style.display = "none";
+          }, 300); // Wait for transition to finish
+        }
 
-        cancelAddBtn.addEventListener('click', () => {
-          addLanguageModal.classList.remove('active');
-        });
+        addLanguageBtn.addEventListener("click", openModal);
+        cancelAddBtn.addEventListener("click", closeModal);
+        cancelLessonBtn.addEventListener("click", closeModal);
 
-        addLanguageForm.addEventListener('submit', (e) => {
+        // Lógica de las pestañas
+        function switchForm(formToShow) {
+          if (formToShow === "idioma") {
+            tabLeccion.classList.remove("active");
+            tabIdioma.classList.add("active");
+            formLeccion.classList.remove("active");
+            formIdioma.classList.add("active");
+          } else {
+            tabIdioma.classList.remove("active");
+            tabLeccion.classList.add("active");
+            formIdioma.classList.remove("active");
+            formLeccion.classList.add("active");
+          }
+        }
+
+        tabIdioma.addEventListener("click", () => switchForm("idioma"));
+        tabLeccion.addEventListener("click", () => switchForm("leccion"));
+
+        // Lógica de los formularios
+        addLanguageForm.addEventListener("submit", (e) => {
           e.preventDefault();
-          const name = document.getElementById('language-name').value;
-          const code = document.getElementById('language-code').value.toUpperCase();
-          
-          // Lógica para registrar el nuevo idioma, en un entorno real aquí harías una llamada a la API
-          const newId = (Math.random() + 1).toString(36).substring(7);
+          const name = document.getElementById("language-name").value;
+          const code = document
+            .getElementById("language-code")
+            .value.toUpperCase();
+
           const newLanguage = {
-            _id: newId,
             nombre: name,
             codigo: code,
             cantidad_lecciones: 0,
-            usuarios_aprendiendo: 1,
+            usuarios_aprendiendo: 0,
           };
+
+          registerLanguage(newLanguage);
+
           idiomas.push(newLanguage);
           renderLanguages();
-          addLanguageModal.classList.remove('active');
-          addLanguageForm.reset();
+          closeModal();
         });
+
+        addLessonForm.addEventListener("submit", (e) => {
+          e.preventDefault();
+          const selectedLanguage = lessonLanguageSelect.value;
+          const gameType = document.getElementById("lesson-game-type").value;
+
+          const words = [];
+          for (let i = 1; i <= 5; i++) {
+            words.push(document.querySelector(`input[name="word${i}"]`).value);
+          }
+          const translations = [];
+          for (let i = 1; i <= 5; i++) {
+            translations.push(
+              document.querySelector(`input[name="translation${i}"]`).value
+            );
+          }
+
+          const lessonData = {
+            idioma: selectedLanguage,
+            palabras: words,
+            traducciones: translations,
+            tipo: gameType,
+            jugadores: 0,
+            autor: localStorage.getItem("usuario"),
+          };
+
+          registerLesson(lessonData);
+
+          console.log("Datos de la lección capturados:", lessonData);
+
+          renderLanguages();
+
+          closeModal();
+        });
+
+        async function registerLanguage(datos) {
+          const respuesta = await fetch("/api/idiomas", {
+            method: "POST",
+
+            // Busca el token en query params o en headers
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos),
+          });
+
+          if (!respuesta.ok) {
+            const error = await respuesta.json();
+            throw new Error(error.error || "Error al registrar idioma");
+          }
+          const resultado = await respuesta.json();
+          console.log("Idioma registrado:", resultado);
+        }
+
+        async function obtenerIdiomas() {
+          const respuesta = await fetch("/api/idiomas", {
+            method: "GET",
+            // Busca el token en query params o en headers
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!respuesta.ok) {
+            const error = await respuesta.json();
+            throw new Error(error.error || "Error al obtener idiomas");
+          }
+          const resultado = await respuesta.json();
+          const idiomas = resultado.map((idioma) => ({
+            nombre: idioma.nombre,
+            codigo: idioma.codigo,
+            cantidad_lecciones: idioma.lecciones ? idioma.lecciones.length : 0,
+            usuarios_aprendiendo: 0, // Este dato debería venir del backend
+          }));
+          return idiomas;
+        }
+
+        async function registerLesson(datos) {
+          const respuesta = await fetch("/api/lecciones", {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datos),
+          });
+
+          if (!respuesta.ok) {
+            const error = await respuesta.json();
+            throw new Error(error.error || "Error al registrar lección");
+          }
+          const resultado = await respuesta.json();
+          console.log("Lección registrada:", resultado);
+        }
       });
     </script>
   </body>

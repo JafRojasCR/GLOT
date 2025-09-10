@@ -197,19 +197,7 @@
         registrar();
       }
       document.addEventListener("DOMContentLoaded", function () {
-        const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
-        if (!localStorage.getItem("token")) {
-          salirBtn.style.display = "none";
-        } else {
-          salirBtn.style.display = "inline-block";
-          salirBtn.onclick = function (e) {
-            e.preventDefault();
-            localStorage.removeItem("token");
-            localStorage.removeItem("datosToken");
-            localStorage.removeItem("usuario");
-            window.location.href = "login.html";
-          };
-        }
+      
         document
           .getElementById("inputnombre")
           .addEventListener("input", updateRulesPanel);
@@ -345,6 +333,13 @@
         showLoadingScreen();
         // The redirect is now handled by the loading screen button
       }
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          verify();
+        }
+      });
+
     </script>
   </body>
 </html>

@@ -11,8 +11,6 @@ const leccionSchema = new Schema({
   tipo: { type: String, required: true },
 });
 
-// Crear el modelo Usuario basado en el esquema
-// const Usuario = model('Usuario', usuarioSchema);
 
 module.exports = model("Leccion", leccionSchema);
 // Exportar el modelo para usarlo en otras partes de la aplicación
