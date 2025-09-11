@@ -69,7 +69,7 @@
           </svg>
         </a>
         <h1 class="text-3xl font-bold text-gray-800" id="language-name">
-         Cargando idioma...
+          Cargando idioma...
         </h1>
       </div>
       <img
@@ -88,7 +88,6 @@
     </main>
 
     <script>
-
       function goBack() {
         localStorage.removeItem("lang");
         localStorage.removeItem("code");
@@ -137,144 +136,148 @@
             window.location.href = "login.html";
           };
         }
-      
 
-      lecciones = await obtenerLecciones();
+        lecciones = await obtenerLecciones();
 
-      console.log(lecciones);
+        console.log(lecciones);
 
-      const leccionesContainer = document.getElementById("lecciones-container");
-
-      const imagenesTipos = {
-        Memoria: "img/Memoria.png",
-        Asociar: "img/Asociar.png",
-        Rellenar: "img/Rellenar.png",
-      };
-
-      // Extract the language name from the URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const languageName = localStorage.getItem("lang");
-      const languageCode = localStorage.getItem("code");
-
-      // Update the header text and flag
-      const languageNameElement = document.getElementById("language-name");
-      const languageFlagElement = document.getElementById("language-flag");
-
-      if (languageName) {
-        languageNameElement.textContent = languageName;
-        // You'll need a mapping from language name to country code
-        // For this example, let's use a simple object
-
-        const countryCode = languageCode ? languageCode.toLowerCase() : null;
-        if (countryCode) {
-          languageFlagElement.src = `https://flagcdn.com/w160/${countryCode}.png`;
-          languageFlagElement.alt = `Bandera de ${languageName}`;
-        }
-      }
-
-      // Filter lessons based on the language name
-      const filteredLecciones = lecciones.filter(
-        (leccion) => leccion.idioma === languageName
-      );
-
-      // Generate cards for the filtered lessons
-      filteredLecciones.forEach((leccion) => {
-        const playerCount = leccion.jugadas;
-        const card = document.createElement("div");
-        card.classList.add(
-          "bg-white",
-          "rounded-xl",
-          "shadow-lg",
-          "p-6",
-          "flex",
-          "flex-col",
-          "items-center",
-          "text-center",
-          "border-2",
-          "border-transparent",
-          "hover:border-blue-400",
-          "transition",
-          "duration-300",
-          "cursor-pointer"
+        const leccionesContainer = document.getElementById(
+          "lecciones-container"
         );
 
-        switch (leccion.tipo) {
-          case "Memoria":
-            card.onclick = () => {
-              localStorage.setItem("lesson_id", leccion._id);
-              window.location.href = `memory.html`;
-            };
-            break;
-          case "Asociar":
-            card.onclick = () => {
-              localStorage.setItem("lesson_id", leccion._id);
-              window.location.href = `match.html`;
-            };
-            break;
-          case "Rellenar":
-            card.onclick = () => {
-              localStorage.setItem("lesson_id", leccion._id);
-              window.location.href = `fill.html`;
-            };
-            break;
-          default:
-            card.onclick = () => {
-              alert("Tipo de lección no soportado.");
-            };
+        const imagenesTipos = {
+          Memoria: "img/Memoria.png",
+          Asociar: "img/Asociar.png",
+          Rellenar: "img/Rellenar.png",
+        };
+
+        // Extract the language name from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const languageName = localStorage.getItem("lang");
+        const languageCode = localStorage.getItem("code");
+
+        // Update the header text and flag
+        const languageNameElement = document.getElementById("language-name");
+        const languageFlagElement = document.getElementById("language-flag");
+
+        if (languageName) {
+          languageNameElement.textContent = languageName;
+          // You'll need a mapping from language name to country code
+          // For this example, let's use a simple object
+
+          const countryCode = languageCode ? languageCode.toLowerCase() : null;
+          if (countryCode) {
+            languageFlagElement.src = `https://flagcdn.com/w160/${countryCode}.png`;
+            languageFlagElement.alt = `Bandera de ${languageName}`;
+          }
         }
 
-        const imgPlaceholder = document.createElement("img");
-        imgPlaceholder.src = imagenesTipos[leccion.tipo];
-        imgPlaceholder.alt = `Imagen para ${leccion.tipo}`;
-        imgPlaceholder.classList.add("w-full", "h-auto", "rounded-md", "mb-4");
+        // Filter lessons based on the language name
+        const filteredLecciones = lecciones.filter(
+          (leccion) => leccion.idioma === languageName
+        );
 
-        const tipoLeccion = document.createElement("h3");
-        tipoLeccion.classList.add("text-2xl", "font-semibold", "mb-2");
-        tipoLeccion.textContent = leccion.tipo;
+        // Generate cards for the filtered lessons
+        filteredLecciones.forEach((leccion) => {
+          const playerCount = leccion.jugadas;
+          const card = document.createElement("div");
+          card.classList.add(
+            "bg-white",
+            "rounded-xl",
+            "shadow-lg",
+            "p-6",
+            "flex",
+            "flex-col",
+            "items-center",
+            "text-center",
+            "border-2",
+            "border-transparent",
+            "hover:border-blue-400",
+            "transition",
+            "duration-300",
+            "cursor-pointer"
+          );
 
-        const autor = document.createElement("p");
-        autor.classList.add("text-sm", "text-gray-500", "mb-1");
-        autor.textContent = `Autor: ${leccion.autor}`;
+          switch (leccion.tipo) {
+            case "Memoria":
+              card.onclick = () => {
+                localStorage.setItem("lesson_id", leccion._id);
+                window.location.href = `memory.html`;
+              };
+              break;
+            case "Asociar":
+              card.onclick = () => {
+                localStorage.setItem("lesson_id", leccion._id);
+                window.location.href = `match.html`;
+              };
+              break;
+            case "Rellenar":
+              card.onclick = () => {
+                localStorage.setItem("lesson_id", leccion._id);
+                window.location.href = `fill.html`;
+              };
+              break;
+            default:
+              card.onclick = () => {
+                alert("Tipo de lección no soportado.");
+              };
+          }
 
-        const jugadores = document.createElement("p");
-        jugadores.classList.add("text-sm", "text-gray-500");
-        jugadores.textContent = `Jugadas: ${playerCount}`;
+          const imgPlaceholder = document.createElement("img");
+          imgPlaceholder.src = imagenesTipos[leccion.tipo];
+          imgPlaceholder.alt = `Imagen para ${leccion.tipo}`;
+          imgPlaceholder.classList.add(
+            "w-full",
+            "h-auto",
+            "rounded-md",
+            "mb-4"
+          );
 
-        card.appendChild(imgPlaceholder);
-        card.appendChild(tipoLeccion);
-        card.appendChild(autor);
-        card.appendChild(jugadores);
+          const tipoLeccion = document.createElement("h3");
+          tipoLeccion.classList.add("text-2xl", "font-semibold", "mb-2");
+          tipoLeccion.textContent = leccion.tipo;
 
-        leccionesContainer.appendChild(card);
-        
+          const autor = document.createElement("p");
+          autor.classList.add("text-sm", "text-gray-500", "mb-1");
+          autor.textContent = `Autor: ${leccion.autor}`;
 
-      });
+          const jugadores = document.createElement("p");
+          jugadores.classList.add("text-sm", "text-gray-500");
+          jugadores.textContent = `Jugadas: ${playerCount}`;
 
- async function obtenerLecciones() {
-        const respuesta = await fetch("/api/lecciones", {
-          method: "GET",
-          // Busca el token en query params o en headers
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-            "Content-Type": "application/json",
-          },
+          card.appendChild(imgPlaceholder);
+          card.appendChild(tipoLeccion);
+          card.appendChild(autor);
+          card.appendChild(jugadores);
+
+          leccionesContainer.appendChild(card);
         });
 
-        if (!respuesta.ok) {
-          const error = await respuesta.json();
-          throw new Error(error.error || "Error al obtener lecciones");
+        async function obtenerLecciones() {
+          const respuesta = await fetch("/api/lecciones", {
+            method: "GET",
+            // Busca el token en query params o en headers
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!respuesta.ok) {
+            const error = await respuesta.json();
+            throw new Error(error.error || "Error al obtener lecciones");
+          }
+          const resultado = await respuesta.json();
+          const lecciones = resultado.map((leccion) => ({
+            _id: leccion._id,
+            idioma: leccion.idioma,
+            autor: leccion.autor,
+            jugadas: leccion.jugadas,
+            tipo: leccion.tipo,
+          }));
+          return lecciones;
         }
-        const resultado = await respuesta.json();
-        const lecciones = resultado.map((leccion) => ({
-          _id: leccion._id,
-          idioma: leccion.idioma,
-          autor: leccion.autor,
-          jugadas: leccion.jugadas,
-          tipo: leccion.tipo,
-        }));
-        return lecciones;
-      }
-     });
+      });
     </script>
   </body>
 </html>

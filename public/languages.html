@@ -638,7 +638,9 @@
           const idiomas = resultado.map((idioma) => ({
             nombre: idioma.nombre,
             codigo: idioma.codigo,
-            cantidad_lecciones: idioma.cantidad_lecciones ? idioma.cantidad_lecciones : 0,
+            cantidad_lecciones: idioma.cantidad_lecciones
+              ? idioma.cantidad_lecciones
+              : 0,
             usuarios_aprendiendo: 0, // Este dato debería venir del backend
           }));
           return idiomas;
@@ -674,7 +676,6 @@
               cantidad_lecciones:
                 idiomas.find((i) => i.nombre === datos.idioma)
                   .cantidad_lecciones + 1,
-              
             }),
           });
           if (!updateIdioma.ok) {

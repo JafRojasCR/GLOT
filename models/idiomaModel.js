@@ -5,7 +5,7 @@ const idiomaSchema = new Schema({
   nombre: { type: String, required: true, unique: true },
   codigo: { type: String, required: true },
   cantidad_lecciones: { type: Number, default: 0 },
-  usuarios_aprendiendo: { type: Number, default: 0 }
+  usuarios_aprendiendo: { type: Number, default: 0 },
 });
 
 // Crear el modelo Usuario basado en el esquema

@@ -11,6 +11,5 @@ const leccionSchema = new Schema({
   tipo: { type: String, required: true },
 });
 
-
 module.exports = model("Leccion", leccionSchema);
 // Exportar el modelo para usarlo en otras partes de la aplicación

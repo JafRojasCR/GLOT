@@ -232,11 +232,9 @@
         window.location.href = "lessons.html";
       }
       document.addEventListener("DOMContentLoaded", async () => {
-        
-         const lessonid = localStorage.getItem("lesson_id");
+        const lessonid = localStorage.getItem("lesson_id");
 
         const leccion = await obtenerLeccion(lessonid);
-       
 
         const gameBoard = document.getElementById("game-board");
         const matchCounter = document.getElementById("match-counter");
@@ -325,20 +323,16 @@
           console.log("Juego completado. Intentos totales:", tries);
         }
 
-         
-      const languageCode = localStorage.getItem("code");
+        const languageCode = localStorage.getItem("code");
 
-      // Update the header text and flag
-      
-      const languageFlagElement = document.getElementById("language-flag");
+        // Update the header text and flag
 
-      
+        const languageFlagElement = document.getElementById("language-flag");
 
         const countryCode = languageCode ? languageCode.toLowerCase() : null;
         if (countryCode) {
           languageFlagElement.src = `https://flagcdn.com/w160/${countryCode}.png`;
         }
-      
 
         // Game initialization
         function initGame() {
@@ -379,11 +373,11 @@
           throw new Error(error.error || "Error al registrar lección");
         }
         const resultado = await respuesta.json();
-       
+
         return resultado;
       }
 
-      async function updateCounter(id,datos) {
+      async function updateCounter(id, datos) {
         const respuesta = await fetch(`/api/lecciones/${id}/`, {
           method: "PUT",
           headers: {
@@ -401,7 +395,6 @@
 
         return resultado;
       }
-
     </script>
   </body>
 </html>

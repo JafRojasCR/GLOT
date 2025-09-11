@@ -9,7 +9,6 @@ const connectDB = require("./config/db"); // Importa la función de conexión a 
 // Importa el enrutador de autenticación (Express router, not 'router' package)
 const { router: authRouter } = require("./middleware/auth");
 
-
 connectDB(); // Llama a la función para conectar a la base de datos
 
 // Inicializa la aplicación Express
