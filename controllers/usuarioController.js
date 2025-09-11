@@ -42,14 +42,30 @@ exports.crearUsuario = async (req, res) => {
   }
 };
 
-exports.actualizarUsuario = async (req, res) => {
-  const { id } = req.params;
-  const { username, clave, email, puntos, juegos_creados, idiomas } = req.body;
+exports.obtenerUsuarioPorNombre = async (req, res) => {
+  const { nombre } = req.params;
 
   try {
-    const usuarioActualizado = await Usuario.findByIdAndUpdate(
-      id,
-      { username, clave, email, puntos, juegos_creados, idiomas },
+    const usuario = await Usuario.findOne({ username: nombre });
+
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado" });
+    }
+    res.json(usuario);
+  } catch (error) {
+    console.error("Error al obtener usuario por nombre:", error);
+    res.status(500).json({ error: "Error al obtener usuario por nombre" });
+  }
+};
+
+exports.actualizarUsuario = async (req, res) => {
+  const { nombre } = req.params;
+  const { username, email, puntos, juegos_creados, idiomas } = req.body;
+
+  try {
+    const usuarioActualizado = await Usuario.findOneAndUpdate(
+      { username: nombre },
+      { username, email, puntos, juegos_creados, idiomas },
       { new: true }
     );
 

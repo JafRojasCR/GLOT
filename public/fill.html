@@ -218,6 +218,8 @@
       }
 
       document.addEventListener("DOMContentLoaded", async () => {
+        const usuario = await obtenerUsuario(localStorage.getItem("usuario"));
+        
         const lessonid = localStorage.getItem("lesson_id");
 
         const leccion = await obtenerLeccion(lessonid);
@@ -332,6 +334,16 @@
                 if (correctMatches === totalPairs) {
                   showWinModal();
                   updateCounter(leccion._id, { jugadas: leccion.jugadas + 1 });
+
+                  if (usuario) {
+                    let idiomas = new Set(usuario.idiomas);
+                    idiomas.add(leccion.idioma);
+                    actualizarUsuario(usuario.username, {
+                      idiomas: Array.from(idiomas),
+                      puntos: usuario.puntos + 1,
+                      juegos_creados: usuario.juegos_creados,
+                    });
+                  }
                 }
               }
             } else {
@@ -412,6 +424,42 @@
         if (!respuesta.ok) {
           const error = await respuesta.json();
           throw new Error(error.error || "Error al registrar lección");
+        }
+        const resultado = await respuesta.json();
+
+        return resultado;
+      }
+
+      async function obtenerUsuario(nombre) {
+        const respuesta = await fetch(`/api/usuarios/${nombre}`, {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al obtener usuario");
+        }
+        const resultado = await respuesta.json();
+        return resultado;
+      }
+
+      async function actualizarUsuario(nombre, datos) {
+        const respuesta = await fetch(`/api/usuarios/${nombre}`, {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(datos),
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al actualizar usuario");
         }
         const resultado = await respuesta.json();
 
