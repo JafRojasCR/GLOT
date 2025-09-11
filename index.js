@@ -8,6 +8,7 @@ const PORT = process.env.PORT;
 const connectDB = require("./config/db"); // Importa la función de conexión a la base de datos
 // Importa el enrutador de autenticación (Express router, not 'router' package)
 const { router: authRouter } = require("./middleware/auth");
+const cors = require("cors");
 
 connectDB(); // Llama a la función para conectar a la base de datos
 
@@ -16,6 +17,11 @@ const app = express();
 
 // Middleware para parsear JSON en las peticiones (body-parser integrado)
 app.use(express.json()); // Permite recibir datos en formato JSON
+
+// Middleware para habilitar CORS
+app.use(cors());    // Se dejan los paréntesis vacíos para permitir todas las solicitudes
+                    // Se pueden poner ips para restringir acceso
+                    // Ejemplo: app.use(cors({ origin: 'http://example.com' }));
 
 app.use("/", viewRoutes);
 app.use("/api/usuarios", usuarioRoutes);
