@@ -418,6 +418,7 @@
       });
 
       document.addEventListener("DOMContentLoaded", async function () {
+        const usuario = await obtenerUsuario(localStorage.getItem("usuario"));
         idiomas = await obtenerIdiomas();
 
         const container = document.getElementById("idioma-container");
@@ -684,6 +685,42 @@
           }
         }
       });
+
+       async function obtenerUsuario(nombre) {
+        const respuesta = await fetch(`/api/usuarios/${nombre}`, {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al obtener usuario");
+        }
+        const resultado = await respuesta.json();
+        return resultado;
+      }
+
+      async function actualizarUsuario(nombre, datos) {
+        const respuesta = await fetch(`/api/usuarios/${nombre}`, {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(datos),
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al actualizar usuario");
+        }
+        const resultado = await respuesta.json();
+
+        return resultado;
+      }
     </script>
   </body>
 </html>
