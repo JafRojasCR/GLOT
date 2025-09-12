@@ -1,16 +1,133 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
   <head>
     <link rel="icon" type="image/x-icon" href="img/GLOTIcon.png" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>G/LOT - Perfil</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      .comfortaa {
+        font-family: "Comfortaa", cursive;
+      }
+      .tab-button.active {
+        border-bottom: 2px solid #60a5fa;
+        color: #60a5fa;
+      }
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 50;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease-in-out;
+      }
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal-content {
+        background-color: white;
+        padding: 2.5rem;
+        border-radius: 12px;
+        text-align: left;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        width: 90%;
+        max-width: 600px;
+      }
+    </style>
   </head>
-  <body>
-    
+  <body class="bg-gray-50 text-gray-800 comfortaa min-h-screen">
+    <!-- Navbar -->
+    <nav class="flex items-center justify-between px-6 py-4 border-b w-full">
+      <div class="flex items-center space-x-2">
+        <img src="./img/GLOT Logo.png" alt="G/LOT Logo" class="h-10 w-auto" />
+      </div>
+      <div class="flex space-x-8 text-lg">
+        <a href="index.html" class="hover:text-green-400 hover:scale-110 transition">Inicio</a>
+        <a href="languages.html" class="hover:text-green-400 hover:scale-110 transition">Aprender</a>
+        <a href="profile.html" class="font-bold text-green-400">Mi Aprendizaje</a>
+        <a href="#" id="logout-btn" class="hover:text-red-400 hover:scale-110 transition">Salir</a>
+      </div>
+    </nav>
+
+    <!-- Layout -->
+    <main class="container mx-auto p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Panel usuario -->
+      <div class="bg-white rounded-xl shadow-lg p-6">
+        <h2 class="text-2xl font-bold mb-4">Perfil</h2>
+        <p><span class="font-bold">Usuario:</span> <span id="username"></span></p>
+        <p><span class="font-bold">Email:</span> <span id="email"></span></p>
+        <p><span class="font-bold">Juegos Ganados:</span> <span id="puntos"></span></p>
+        <p><span class="font-bold">Registrado:</span> <span id="registrado"></span></p>
+        <div class="mt-6">
+          <button id="delete-account-btn" class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition">
+            Eliminar Cuenta
+          </button>
+        </div>
+      </div>
+
+      <!-- CRUD Lecciones -->
+      <div class="lg:col-span-2 bg-white rounded-xl shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold">Mis Lecciones</h2>
+        </div>
+        <table class="w-full border">
+          <thead>
+            <tr class="bg-gray-100 text-left">
+              <th class="p-2">Idioma</th>
+              <th class="p-2">Palabras</th>
+              <th class="p-2">Tipo</th>
+              <th class="p-2">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="lesson-table"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- Modal editar lección -->
+    <div id="edit-modal" class="modal-overlay">
+      <div class="modal-content">
+        <h2 class="text-2xl font-bold mb-4">Editar Lección</h2>
+        <form id="edit-lesson-form" class="space-y-4">
+          <div>
+            <label for="edit-lesson-language" class="block mb-1">Idioma</label>
+            <select id="edit-lesson-language" class="w-full border rounded-md px-3 py-2"></select>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div id="edit-words"></div>
+            <div id="edit-translations"></div>
+          </div>
+          <div>
+            <label for="edit-lesson-game-type" class="block mb-1">Tipo de juego</label>
+            <select id="edit-lesson-game-type" class="w-full border rounded-md px-3 py-2">
+              <option value="Memoria">Memoria</option>
+              <option value="Asociar">Asociar</option>
+              <option value="Rellenar">Rellenar</option>
+            </select>
+          </div>
+          <div class="flex justify-end space-x-4 mt-6">
+            <button type="button" id="cancel-edit-btn" class="bg-gray-300 px-4 py-2 rounded-full">Cancelar</button>
+            <button type="submit" class="bg-blue-400 text-white px-4 py-2 rounded-full">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <script>
-      // Verificar token antes de mostrar la página
       async function verifyTokenOrRedirect() {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -33,60 +150,166 @@
         }
       }
       verifyTokenOrRedirect();
-      // Salir button logic
-      document.addEventListener("DOMContentLoaded", async function () {
-        const usuario = await obtenerUsuario(localStorage.getItem("usuario"));
-        const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
-        if (!localStorage.getItem("token")) {
-          salirBtn.style.display = "none";
-        } else {
-          salirBtn.style.display = "inline-block";
-          salirBtn.onclick = function (e) {
-            e.preventDefault();
-            localStorage.removeItem("token");
-            localStorage.removeItem("datosToken");
-            localStorage.removeItem("usuario");
-            localStorage.removeItem("lang");
-            localStorage.removeItem("code");
-            window.location.href = "login.html";
-          };
+
+      let usuario = null;
+      let idiomas = [];
+      let lecciones = [];
+      let editingLesson = null;
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        await cargarUsuario();
+        idiomas = await obtenerIdiomas();
+        await cargarLecciones();
+        bindLogout();
+        bindDeleteAccount();
+      });
+
+      async function cargarUsuario() {
+        const res = await fetch("/api/usuarios/" + localStorage.getItem("usuario"), {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        });
+        usuario = await res.json();
+        document.getElementById("username").textContent = usuario.username;
+        document.getElementById("email").textContent = usuario.email;
+        document.getElementById("puntos").textContent = usuario.puntos;
+        document.getElementById("registrado").textContent = new Date(usuario.registrado_el).toLocaleDateString();
+      }
+
+      async function obtenerIdiomas() {
+        const res = await fetch("/api/idiomas", {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        });
+        return await res.json();
+      }
+
+      async function cargarLecciones() {
+        const res = await fetch("/api/lecciones?autor=" + usuario.username, {
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        });
+        lecciones = await res.json();
+        renderLecciones();
+      }
+
+      function renderLecciones() {
+        const tbody = document.getElementById("lesson-table");
+        tbody.innerHTML = "";
+        lecciones.forEach((l) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="p-2">${l.idioma}</td>
+            <td class="p-2">${l.palabras.join(", ")}</td>
+            <td class="p-2">${l.tipo}</td>
+            <td class="p-2 flex gap-2">
+              <button class="bg-yellow-400 px-3 py-1 rounded-full edit-btn" data-id="${l._id}">Editar</button>
+              <button class="bg-red-400 text-white px-3 py-1 rounded-full delete-btn" data-id="${l._id}">Eliminar</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+
+        document.querySelectorAll(".edit-btn").forEach((btn) =>
+          btn.addEventListener("click", () => openEditModal(btn.dataset.id))
+        );
+        document.querySelectorAll(".delete-btn").forEach((btn) =>
+          btn.addEventListener("click", () => confirmarEliminar(btn.dataset.id))
+        );
+      }
+
+      function openEditModal(id) {
+        editingLesson = lecciones.find((l) => l._id === id);
+        document.getElementById("edit-lesson-language").innerHTML = idiomas
+          .map((i) => `<option ${i.nombre === editingLesson.idioma ? "selected" : ""}>${i.nombre}</option>`)
+          .join("");
+        document.getElementById("edit-lesson-game-type").value = editingLesson.tipo;
+
+        const wordsDiv = document.getElementById("edit-words");
+        const transDiv = document.getElementById("edit-translations");
+        wordsDiv.innerHTML = ""; transDiv.innerHTML = "";
+        editingLesson.palabras.forEach((w, i) => {
+          wordsDiv.innerHTML += `<input class="w-full border px-2 py-1 mb-2" value="${w}" data-word="${i}" />`;
+          transDiv.innerHTML += `<input class="w-full border px-2 py-1 mb-2" value="${editingLesson.traducciones[i]}" data-trans="${i}" />`;
+        });
+
+        document.getElementById("edit-modal").classList.add("active");
+      }
+
+      document.getElementById("cancel-edit-btn").addEventListener("click", () => {
+        document.getElementById("edit-modal").classList.remove("active");
+      });
+
+      document.getElementById("edit-lesson-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const datos = {
+          idioma: document.getElementById("edit-lesson-language").value,
+          palabras: [...document.querySelectorAll("#edit-words input")].map(i => i.value),
+          traducciones: [...document.querySelectorAll("#edit-translations input")].map(i => i.value),
+          tipo: document.getElementById("edit-lesson-game-type").value,
+        };
+
+        const res = await fetch("/api/lecciones/" + editingLesson._id, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + localStorage.getItem("token") },
+          body: JSON.stringify(datos),
+        });
+        if (res.ok) {
+          document.getElementById("edit-modal").classList.remove("active");
+          await cargarLecciones();
         }
       });
 
-       async function obtenerUsuario(nombre) {
-        const respuesta = await fetch(`/api/usuarios/${nombre}`, {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-            "Content-Type": "application/json",
-          },
+      function confirmarEliminar(id) {
+        Swal.fire({
+          title: "¿Eliminar esta lección?",
+          text: "Esta acción no se puede deshacer.",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await fetch("/api/lecciones/" + id, {
+              method: "DELETE",
+              headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+            });
+            await cargarLecciones();
+          }
         });
-
-        if (!respuesta.ok) {
-          const error = await respuesta.json();
-          throw new Error(error.error || "Error al obtener usuario");
-        }
-        const resultado = await respuesta.json();
-        return resultado;
       }
 
-      async function actualizarUsuario(nombre, datos) {
-        const respuesta = await fetch(`/api/usuarios/${nombre}`, {
-          method: "PUT",
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(datos),
+      function bindLogout() {
+        document.getElementById("logout-btn").addEventListener("click", () => {
+          localStorage.clear();
+          window.location.href = "login.html";
         });
+      }
 
-        if (!respuesta.ok) {
-          const error = await respuesta.json();
-          throw new Error(error.error || "Error al actualizar usuario");
+      function bindDeleteAccount() {
+        document.getElementById("delete-account-btn").addEventListener("click", () => {
+          Swal.fire({
+            title: "¿Eliminar tu cuenta?",
+            text: "Esto eliminará tu usuario y todas tus lecciones asociadas. No se puede deshacer.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              await eliminarUsuario(usuario.username);
+              localStorage.clear();
+              window.location.href = "login.html";
+            }
+          });
+        });
+      }
+
+      async function eliminarUsuario(nombre) {
+        const res = await fetch("/api/usuarios/" + nombre, {
+          method: "DELETE",
+          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+        });
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || "Error al eliminar usuario");
         }
-        const resultado = await respuesta.json();
-
-        return resultado;
       }
     </script>
   </body>

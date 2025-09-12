@@ -7,7 +7,6 @@ const usuarioSchema = new Schema({
   email: { type: String, required: true, unique: true },
   puntos: { type: Number, default: 0 },
   registrado_el: { type: Date, default: Date.now },
-  juegos_creados: { type: Number, default: 0 },
   idiomas: { type: [String], default: [] },
 });
 

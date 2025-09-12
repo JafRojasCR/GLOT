@@ -50,11 +50,11 @@ exports.crearLeccion = async (req, res) => {
 exports.actualizarLeccion = async (req, res) => {
   try {
     const { id } = req.params;
-    const { jugadas } = req.body;
+    const { idioma, palabras, traducciones, jugadas, autor, tipo } = req.body;
 
     const leccionActualizada = await Leccion.findByIdAndUpdate(
       id,
-      { jugadas },
+      { idioma, palabras, traducciones, jugadas, autor, tipo },
       { new: true }
     );
 

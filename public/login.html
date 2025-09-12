@@ -24,6 +24,9 @@
     >
       <h1 class="text-4xl font-bold mb-6 text-green-400">Iniciar Sesión</h1>
       <div class="space-y-6">
+        <!-- Mensaje de error -->
+        <p id="mensaje" class="text-red-500 text-sm font-semibold"></p>
+
         <div>
           <input
             type="email"
@@ -84,12 +87,13 @@
 
           if (!respuesta.ok) {
             document.getElementById("mensaje").innerText =
-              resultado.error || "Credenciales inválidas";
+              resultado.error || "Usuario o contraseña incorrectos.";
             return;
           }
 
           // Guardar el token en localStorage
           localStorage.setItem("token", resultado.token);
+
           // Decodificar datosToken desde el token
           function parseJwt(token) {
             const base64Url = token.split(".")[1];
@@ -105,17 +109,14 @@
             return JSON.parse(jsonPayload);
           }
           const datosToken = parseJwt(resultado.token);
-          localStorage.setItem("token", resultado.token);
           localStorage.setItem("datosToken", JSON.stringify(datosToken));
           localStorage.setItem("usuario", datosToken.username);
 
-          // Redireccionar o continuar lógica
-          // window.location.href = 'dashboard.html'; // si aplica
+          // Verificar token y redirigir
           const token = localStorage.getItem("token");
           if (!token) {
             window.location.href = "login.html";
           } else {
-            // Optionally, call backend to verify token
             fetch("/api/verify-token", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -126,6 +127,8 @@
                 if (result.valid) {
                   window.location.href = "languages.html";
                 } else {
+                  document.getElementById("mensaje").innerText =
+                    "Sesión no válida, vuelve a iniciar sesión.";
                   window.location.href = "login.html";
                 }
               });

@@ -398,7 +398,7 @@
       }
       verifyTokenOrRedirect();
       // Salir button logic
-      document.addEventListener("DOMContentLoaded", function () {
+
         localStorage.removeItem("lesson_id");
         const salirBtn = document.querySelector('a[href="#"]:nth-child(4)');
         if (!localStorage.getItem("token")) {
@@ -415,11 +415,14 @@
             window.location.href = "login.html";
           };
         }
-      });
+
 
       document.addEventListener("DOMContentLoaded", async function () {
         const usuario = await obtenerUsuario(localStorage.getItem("usuario"));
         idiomas = await obtenerIdiomas();
+
+        const lecciones = await obtenerLecciones();
+
 
         const container = document.getElementById("idioma-container");
         const addLanguageBtn = document.getElementById("add-language-btn");
@@ -437,12 +440,13 @@
           "lesson-language-select"
         );
 
-        function renderLanguages() {
+           function renderLanguages() {
           container.innerHTML = "";
-
-          // CODIGO PARA TOMAR LOS IDIOMAS DE LA BASE DE DATOS
-
           idiomas.forEach((idioma) => {
+            const cantidadLecciones = lecciones.filter(
+              (l) => l.idioma === idioma.nombre
+            ).length;
+
             const card = document.createElement("div");
             card.classList.add(
               "bg-white",
@@ -481,16 +485,16 @@
             nombre.classList.add("text-2xl", "font-semibold", "mb-2");
             nombre.textContent = idioma.nombre;
 
-            const lecciones = document.createElement("p");
-            lecciones.classList.add("text-sm", "text-gray-500", "mb-1");
-            lecciones.textContent = `Lecciones: ${idioma.cantidad_lecciones}`;
+            const leccionesText = document.createElement("p");
+            leccionesText.classList.add("text-sm", "text-gray-500", "mb-1");
+            leccionesText.textContent = `Lecciones: ${cantidadLecciones}`;
 
             const usuarios = document.createElement("p");
             usuarios.classList.add("text-sm", "text-gray-500");
 
             card.appendChild(flagImg);
             card.appendChild(nombre);
-            card.appendChild(lecciones);
+            card.appendChild(leccionesText);
             card.appendChild(usuarios);
 
             container.appendChild(card);
@@ -721,6 +725,32 @@
 
         return resultado;
       }
+
+      async function obtenerLecciones() {
+        const respuesta = await fetch("/api/lecciones", {
+          method: "GET",
+          // Busca el token en query params o en headers
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!respuesta.ok) {
+          const error = await respuesta.json();
+          throw new Error(error.error || "Error al obtener lecciones");
+        }
+        const resultado = await respuesta.json();
+        const lecciones = resultado.map((leccion) => ({
+          _id: leccion._id,
+          idioma: leccion.idioma,
+          autor: leccion.autor,
+          jugadas: leccion.jugadas,
+          tipo: leccion.tipo,
+        }));
+        return lecciones;
+      }
+
     </script>
   </body>
 </html>

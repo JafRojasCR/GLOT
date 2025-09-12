@@ -15,7 +15,7 @@ exports.obtenerUsuarios = async (req, res) => {
 
 exports.crearUsuario = async (req, res) => {
   try {
-    const { username, clave, email, puntos, juegos_creados, idiomas } =
+    const { username, clave, email, puntos, idiomas } =
       req.body;
 
     // 1. Generar un salt (semilla aleatoria) para el hash
@@ -29,7 +29,6 @@ exports.crearUsuario = async (req, res) => {
       clave: hash,
       email,
       puntos,
-      juegos_creados,
       idiomas,
     });
     await nuevoUsuario.save();
@@ -60,12 +59,12 @@ exports.obtenerUsuarioPorNombre = async (req, res) => {
 
 exports.actualizarUsuario = async (req, res) => {
   const { nombre } = req.params;
-  const { username, email, puntos, juegos_creados, idiomas } = req.body;
+  const { username, email, puntos, idiomas } = req.body;
 
   try {
     const usuarioActualizado = await Usuario.findOneAndUpdate(
       { username: nombre },
-      { username, email, puntos, juegos_creados, idiomas },
+      { username, email, puntos, idiomas },
       { new: true }
     );
 
@@ -81,11 +80,10 @@ exports.actualizarUsuario = async (req, res) => {
 };
 
 exports.eliminarUsuario = async (req, res) => {
-  const { id } = req.params;
+  const { nombre } = req.params;
 
   try {
-    const usuarioEliminado = await Usuario.findByIdAndDelete(id);
-
+    const usuarioEliminado = await Usuario.findOneAndDelete({ username: nombre });
     if (!usuarioEliminado) {
       return res.status(404).json({ error: "Usuario no encontrado" });
     }
